@@ -1,0 +1,700 @@
+#+TITLE: Vim Maker script
+#+AUTHOR: brickviking
+#+EMAIL: brickviking@gmail.com
+
+* Introduction
+This is a simple script to create Vim from its source code. About the only thing missing from
+this is a licence, I haven't come up with a usable licence yet.
+
+* Readme, in org format
+  :PROPERTIES:
+  :header-args: org :tangle README.org
+  :END:
+
+
+#+BEGIN_SRC org -i
+,* Introduction
+This is a very simple wrapper script to clean, configure, make, install and execute Vim.
+Changes can be made to the variables inside the script, which will help drive how Vim can be
+compiled, installed and executed. It started life as emacsmake, but has since morphed. Funny, that.
+
+,* Variables and requirements
+First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME=. You can either
+fetch and extract a static tarball of the source, or you can access either of the git repositories.
+
+Tarballs are usually a fixed point in the stage of Vim development, but git repositories have
+multiple threads of development, meaning there's a requirement to select the correct one if you
+don't simply want to use the latest available code, often labeled the master branch. This is always
+a moving target, so people often select a version branch, or perhaps a specific point in one of
+those branches, such as an official release point.
+
+Tarballs are created at these points, making them useful for snapshots where nothing much will
+change in the future. It also means there's no expected future additions to that development unless
+you make the effort to update on a regular basis.
+
+If you grab code from the git repositories, be aware that there are multiple branches of Vim code
+that you can build, so check out what's available for compiling, select one, and you'll be off. You
+will of course need to know how to use git, and how to select the correct branch of Vim to
+compile.
+
+'** Compile requirements
+Because you're compiling Vim, you can choose which libraries to compile Vim with; adjust the
+=VIMCONFIGPARAMS= array for this. You might want to check the output of =./configure --help= from
+within the source directory to see what parameters are supported.
+
+This will include choosing the place to put the compiled version of Vim, adjust =VIMHOME=. Note
+that this is the root of the tree where the whole of Vim will eventually live, not the location of
+the Vim binary itself. Usually directories will be created below this point for the libraries, the
+binaries and the compiled script code to live. The usual place that is selected if you don't specify
+it would be =/usr/local=, just as with a lot of other configure-based build systems.
+
+If you're also going to compile with support for other things such as libjansson, then make sure the 
+required -dev/-devel packages are also installed. You'll probably want to include support for
+interpreters such as python, perl and maybe even lua.
+
+,* Executing Vim
+Simply type in =vim= at the command line. That's it. For a graphical vim, you can use gvim, or you
+can use =vim -g= instead. I suspect one is symlinked to the other, though I haven't confirmed that.
+
+,* Future directions
+At this stage, I haven't got the foggiest idea what else I need, though I've already simplified this
+by removing the whole "execute Vim" stage, leaving that up to the normal instructions.
+
+The usual applies to anyone who wants to report bugs, issues or even suggestions, check out the
+issues section of this project.
+
+#+END_SRC
+* Main file
+    :PROPERTIES:
+    :header-args: bash :tangle vimmaker :tangle-mode (identity #o755)
+    :END:
+
+** Version history
+
+v0.1 Initial cut, should be mostly complete.
+v0.2 Changes to account for mistakes I made.
+v0.3 rework of environment variables.
+v0.4 added distclean, maintainerclean, and run everything.
+v0.5 Renamed reference from emacs-sandbox to with-emacs as upstream has renamed.
+v0.6 Finally added link to with-emacs.sh - it's about time.
+     Added comment for checking number of args at runtime.
+v0.7 Added in a do-almost-all (clean, configure, make).
+v0.8 Added some commented out options (lucid and motif).
+v0.8.1 Twiddled with config, error's only in the docs.
+v0.8.2 fixed docs for config with ugly hack.
+v0.9 Planning install upgrade to symlink the emacs binary to emacs-${VER}-$[WMGR}
+v0.10 Reworked all the pushd/popd to be quiet, by redirecting their output to /dev/null.
+v0.11 Created new param to combine make and install, deliberately doesn't include config.
+v0.12 Begin process of pulling in vars from environment if already provided.
+v0.13 Now we've got the main x-toolkit targets, how about --without-x?
+v0.14v This has become a branch split off from the original emacsmake project, now
+       called vimmaker and reversioned to 0.1
+
+** Header and Changelog
+A few notes made about things added/changed, along with a long-term target to meet for Vim
+versions earlier than 8. That rather depends on how far the commit history goes back.
+
+#+BEGIN_SRC bash
+#!/bin/bash
+#
+# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit vim project
+#
+# TODO: rework to remove what's left of the emacsisms.
+#+END_SRC
+
+** Parameters
+
+So far, the only thing of note here is that we need a specific directory to be explicitly mentioned
+so that calling this from sudo doesn't bork with messages such as:
+#+BEGIN_QUOTE
+/usr/local/bin/vimmaker: line 157: pushd: /root/src/c/vim: No such file or directory
+#+END_QUOTE
+
+Anyhow, there are some other tweakable values here which make sense.
+
+Another thought—we could perhaps pull in our VIMCONFIGPARAMS from a created-at-first-run file.
+The concept would be:
++ If we don't have a defaults file already
+  + prompt user for "Choose, or defaults" (*)
+  + write file back (for next time)
++ otherwise, read that file, and prompt user
+  + Defaults are ....., do you wish to change these?
+  + if so, select other defaults
+  + write file back (for next time)
+
+(*) We need to tweak VIMCOMPILEHOME, VIMHOME and VIMCONFIGPARAMS.
+
+Currently variables just get set to whatever made sense in the script, but there's no reason why we
+can't support env vars from the outside either.
+
+#+BEGIN_SRC bash -i
+#######################
+# Modifiable parameters
+# You WILL want to fiddle with these if you don't want the args I chose
+# This WILL break if the user running (EUID) isn't the same as the user owning the source directory
+# i.e. if there's no /root/src/c/vim
+#VIMCOMPILEHOME="${HOME}/src/c/vim" # Should be specific, not user-relative
+
+# Provide for the option to feed these vars in from the outside
+# and allows us to pull in from somewhere else
+VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
+# Place to put Vim (root of tree)
+VIMHOME=${VIMHOME:-"/usr/local"}
+# Default, but check the configMe functions further down. Can't feed this in from user's env.
+
+# Currently this is mostly correct, I'm not sure if anything else needs adding.
+# I've deliberately left out these two lines as they don't work for me yet:
+#    "--enable-mzschemeinterp"
+#    "--with-plthome=/usr/local"
+
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"
+    "--prefix=${VIMHOME}"
+)
+# Default X toolkit if we don't change it with a -c{g2,g3,m,n} option
+WMGR=gtk3
+#+END_SRC
+
+** Functions
+*** Help function
+
+The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). There's also a slight bug with VIMCONFIGPARAMS
+if I decide I want to show non-default window toolkits. So far I've added
+gtk, gtk2, gtk3 (the default), lucid and Motif toolkits. I haven't bothered
+with -nw, as I'm always on a desktop with an Xorg server running.
+
+#+BEGIN_SRC bash -i
+###########
+# Functions
+
+# Help function, usage(), ugly hack to put in toolkits
+VIMCONFIGPARAMSGTK2=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk2"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSGTK3=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSMOTIF=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=motif"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSNOX=( # You know I just had to do it
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=no"
+    "--prefix=${VIMHOME}"
+)
+
+helpMe() {
+    echo "$0: Vim recompiler script"
+    echo "   -h   help (this text)"
+    echo "   -d   Runs 'make distclean'"
+    echo "   -a   Runs  every step except execute"
+    echo "   -e   run every step; distclean, configure, make, install, run"
+    echo "        default Vim binary location is ${VIMHOME}"
+    echo "   -c   run ./configure with params ${VIMCONFIGPARAMS[@]}"
+    echo "        this selects something sensible for the target machine"
+    echo "   -cg3 run ./configure with params ${VIMCONFIGPARAMSGTK3[@]}"
+    echo "   -cg2 run ./configure with params ${VIMCONFIGPARAMSGTK2[@]}"
+    echo "   -cm  run ./configure with params ${VIMCONFIGPARAMSMOTIF[@]}"
+    echo "   -cn  run ./configure with params ${VIMCONFIGPARAMSNOX[@]}"
+    echo "   -m   compile (no install), runs make"
+    echo "   -i   install to ${VIMHOME}, runs make install"
+    echo "   -mi  combines compile and install steps"
+    echo "   -u   uninstall from ${VIMHOME}, runs make uninstall"
+}
+#+END_SRC
+
+*** Cleaning scripts distclean/maintainer-clean
+
+Clean basically removes almost everything that didn't come with the source code, and
+distclean removes everything that was generated, leaving only the original code.  I'm not
+sure about the distinction, though I used to know. One point I've noted is that neither command is
+gatekeepered, i.e. they both take immediate effect without the ability to back out.
+
+#+BEGIN_SRC bash -i
+# Runs make clean, but only if the configure step had created a Makefile.
+# TODO: no chance to break out of this, perhaps we should offer that
+cleanMe() {
+    if [[ -f Makefile ]]; then
+	echo "This will REMOVE all compiled files including makefiles"
+	make clean
+    else
+	echo "Makefile not found, skipping"
+    fi
+}
+
+# Same proviso as above, this command takes immediate effect
+cleanMeGood() {
+    if [[ -f Makefile ]]; then
+	echo "This will REMOVE all compiled files including makefiles"
+	make distclean
+    else
+	echo "Makefile not found, skipping"
+    fi
+}
+#+END_SRC
+
+*** Configure Vim for compilation
+
+It's pretty obvious what this does, though it does presume we're in the correct directory, which we
+should be by the time we get here. Heck, if we weren't, something went badly wrong.
+
+I learned to specify the location of the configure directly, so I don't accidentally pick up on a
+preinstalled configure somewhere in the ${PATH}.
+
+#+BEGIN_SRC bash -i
+# Runs configure phase, runs autogen if configure isn't here already
+# This just does GTK3 unless VIMCONFIGPARAMS[] is changed from a calling function
+configMe() {
+    if [[ -f ./configure ]]; then
+        CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+    else
+        # Is this even relevant for vim?
+        ./autogen.sh # fails if autotools not installed
+        if [[ ! -f configure ]]; then
+            echo "Failed to create configure, do you have autotools installed?"
+        else
+            CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+        fi
+    fi
+}
+
+# Should support the GTK1 crowd but here, just grabs gtk3
+configMeGTK() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"   # because gtk2 is ever so slightly broken here
+    "--prefix=${VIMHOME}" )
+    WMGR=gtk # (might be gtk3)
+    configMe
+}
+
+# Should support the GTK2 crowd too
+configMeGTK2() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk2"
+    "--prefix=${VIMHOME}" )
+    WMGR=gtk2
+    configMe
+}
+
+
+# Default unless something else chosen, simply call configMe
+configMeGtk3() {
+    configMe
+}
+
+# Choose this if you actually have a Motif or LessTif
+configMeMotif() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=motif"
+    "--prefix=${VIMHOME}" )
+    WMGR=motif
+    configMe
+}
+
+# Choose this if you don't want an Vim with X (creates vim-nox)
+configMeNoX() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=no"
+    "--prefix=${VIMHOME}" )
+    WMGR=nox
+    configMe
+}
+
+#+END_SRC
+
+*** Make command
+
+The only note here is that we force a full recompile so we don't accidentally install stale .elc
+files from previous compiles.
+
+#+BEGIN_SRC bash -i
+# Runs make (hopefully we ran configure first)
+makeMe() {
+    if [[ -f Makefile ]]; then
+	make -j4 # because we want it faster
+    else
+	echo "No Makefile found, perhaps run with -c first?"
+    fi
+}
+#+END_SRC
+
+*** Install/uninstall
+
+This is a way to find out what I already compiled, if I compiled it. We start off with a default
+of gtk3 in WMGR, which only changes if we find something specific. We don't really have to cut
+off the pattern itself and it would save us a step through cut.
+
+If we compiled without a toolkit altogether, this will have to be added to, as there'd be no other
+switches to look for.
+
+Now this function might be a bit superfluous, as the config.log might not exist here. So I'll need
+to reconsider how this will work. At the moment, it'll merely say I haven't run configure.
+
+#+BEGIN_SRC bash -i
+# Find what I made already, this is normally called from installMe
+whatMadeMe() {
+    # Piece to load into an array so I can parse the --with-x-toolkit parameter
+    # VERY sensitive to configure output - if it changes, then this won't work.
+    # If I search for $ ./configure I'll find the right line.
+    if [[ -f src/auto/config.log ]]; then
+        pushd src/auto >/dev/null # don't forget to popd after this
+        mapfile -t TOOLKIT < <(sed -n '/\$ .\/configure/p' config.log | cut -c17-)
+        popd >/dev/null
+        for this in ${TOOLKIT[@]}; do
+            case "${this}" in
+                "--enable-gui=gtk") WMGR=gtk ;; # Works out to be gtk3 here
+                "--enable-gui=gtk2") WMGR=gtk2 ;;
+                "--enable-gui=gtk3") WMGR=gtk3 ;;
+                "--enable-gui=motif") WMGR=motif ;;
+                "--enable-gui=no") WMGR=nox ;; # No X gui here, just terminal/ncurses.
+            esac # We can simply ignore everything else
+        done # for this in ${TOOLKIT}
+        printf "Toolkit is: %s\n" ${WMGR}
+    else
+        echo "I don't think you ran configure in ${VIMCOMPILEHOME}. Please rerun vimmaker with a -c parameter"
+        popd >/dev/null # just to keep the stack straight
+        exit 1 # Shouldn't really exit here
+    fi
+}
+#+END_SRC
+
+This piece copies the generated vim binary at the destination to a backup that has the X toolkit
+name appended.
+
+#+BEGIN_SRC bash -i
+# This copies the delivered binary ${VIMHOME}/bin/vim to vim-${VERSION}-$[WMGR}
+# which will be something like vim-{gtk2,gtk3,motif}
+# May not work for versions earlier than 8
+copyMe() {
+    # If we fail to find a vim here, we failed to install
+    if [[ -f ${VIMHOME}/bin/vim ]]; then
+        VIMTGT="${VIMHOME}/bin/vim"
+        echo "Linking ${VIMHOME}/bin/${VIMTGT} to ${VIMHOME}/bin/${VIMTGT}-${WMGR}"
+        # There should perhaps be a sudo/doas here
+        sudo cp -iv ${VIMHOME}/bin/${VIMTGT} ${VIMHOME}/bin/${VIMTGT}-${WMGR}
+    else
+        echo "$0: we couldn't find a vim at ${VIMHOME} or ${WMGR} isn't set."
+    fi
+}
+
+#+END_SRC
+
+This should by rights require the user to use sudo for this phase, but I have no clue as to what's
+on a target machine for sudo permissions, if the user even has sudo rights.  Otherwise, it's a stock
+standard install-vim-to-target-directory at ${VIMHOME} specified earlier in the PARAMS section.
+One point not in the defaults is to copy the binary to a file that has the toolkit embedded in the
+name.
+
+#+BEGIN_SRC bash -i
+# Runs the install phase (currently don't need sudo, but would have normally done)
+installMe() {
+    # echo "This will require you to enter in your password" # only needed for system dirs
+    # sudo make install
+    # TODO: should check that there's an Vim binary first, but I don't know where that will be
+    # First, find out what we made from what's been left behind in the last compile
+    whatMadeMe
+    if [[ -z ${WMGR} ]]; then
+        echo "No toolkit selected (not even -nox), you should probably have run vimmaker -c"
+    fi
+    # There should perhaps be a sudo/doas here
+    sudo make install
+    copyMe
+}
+
+# Uninstall from $VIMHOME
+uninstallMe() {
+    # The only requirements are that I've installed Vim at VIMHOME
+    # and NOT reconfigured Vim since
+    if [[ -f "${VIMHOME}/bin/vim" ]]; then
+        make uninstall
+    else
+        echo "Are you sure you installed Vim to ${VIMHOME}?"
+    fi
+}
+
+#+END_SRC
+
+*** Running
+
+This runs the just-installed Vim.
+
+#+BEGIN_SRC bash -i
+# Assuming everything else is done, runs compiled Vim from install
+runMe() {
+    pushd "${VIMHOME}"
+    # Hm. What do I do here? with-emacs won't run vim. 
+    RETVAL=$( with-emacs.sh "${VIMRUNARGS[@]}" )
+    if [[ "${RETVAL}" != 0 ]]; then
+        echo "Completed with ${RETVAL}"
+    else
+        echo "Completed with success"
+    fi
+    popd >/dev/null
+}
+#+END_SRC
+
+*** Do-everything section
+
+To call this, we just string all the sections together in a sequence. I've made no attempt to
+support multiple stages, and have explicitly disallowed this by only allowing one arg down further
+in main().
+
+#+BEGIN_SRC bash -i
+# Do almost everything
+execMakeMe() {
+    cleanMe # it's a distclean
+    configMe
+    makeMe
+}
+
+# Do everything except runMe - may require sudo
+execMe() {
+    execMakeMe # distclean, config and make
+    installMe # Don't add copyMe to this, it's called from here already
+#    runMe
+}
+
+#+END_SRC
+
+** Main
+
+This handles the arg matching. We explicitly disallow multiple stages from being run, as we need to
+process things in a certain order and it's too complex for me to track what stages I've set,
+especially if I try doing install folllowed by uninstall, we'd have to reorder this so the uninstall
+was done first even if we specified it last. After all, there's absolutely no point in installing
+all of it only to uninstall it six seconds later.
+
+I've also not made any attempt at using getopts, as I feel it's simply quicker to roll my own.
+However, I could have used short/long switches like the following:
+
+#+BEGIN_QUOTE bash -i
+# Need a getopts-style processor here, or I could simply roll my own. Quicker to roll.
+# args=$(getopt -n "$0" -o cdDhmiru -l config,distclean,help,make,install,run,uninstall -- "$@") || { usage; exit 1; }
+
+# eval set -- "$args"
+# The while true won't work, as we need to run steps in order, not in the order the args are processed.
+# TODO: we could handle multiple x/y/z in order, like this:
+#    each arg read, sets val, then 
+#+END_QUOTE
+
+The -e:/--emacs: switch was the precursor for the "run Vim from this location instead" function
+from with-emacs.sh, but as the script does stuff better than I would have done, I left that up to
+the secondary script. It's not written by me, and the style is quite different - presumably someone
+who knows what they're doing.
+
+#+BEGIN_SRC bash -i
+########
+# main()
+
+if [[ -n $2 ]]; then # In short, if 2 or more args
+    echo "$0: Too many arguments, we only need one of the following"
+    helpMe
+elif [[ -n $1 ]]; then
+    case $1 in 
+        "-h"|"--help"|"-?") helpMe ;;
+        "-d") pushd "${VIMCOMPILEHOME}" >/dev/null
+              cleanMe
+              popd >/dev/null ;;
+	"-D") pushd "${VIMCOMPILEHOME}" >/dev/null
+              cleanMeGood
+              popd >/dev/null ;;
+        "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
+              execMakeMe
+              popd >/dev/null ;;
+        "-e") pushd "${VIMCOMPILEHOME}" >/dev/null # Eventually changes to ${VIMHOME}
+              execMe
+              popd >/dev/null ;;
+        "-c") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMe
+              popd >/dev/null ;; # Uses GTK3 with xwidgets
+        "-cg") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeGTK
+              popd >/dev/null ;;
+        "-cg2") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeGTK2
+              popd >/dev/null ;;
+        "-cl") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeLucid
+              popd >/dev/null ;;
+        "-cm") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeMotif
+              popd >/dev/null ;;
+        "-cn") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeNoX
+              popd >/dev/null ;;
+        "-m") pushd "${VIMCOMPILEHOME}" >/dev/null
+              makeMe
+              popd >/dev/null ;;
+        "-i") pushd "${VIMCOMPILEHOME}" >/dev/null
+              installMe
+              popd >/dev/null ;;
+        # Let's do this all here
+        "-mi") pushd "${VIMCOMPILEHOME}">/dev/null
+              makeMe
+              installMe
+              popd >/dev/null ;;
+        "-r") pushd "${VIMHOME}">/dev/null
+              runMe
+              popd >/dev/null ;;
+	"-u") pushd "${VIMCOMPILEHOME}" >/dev/null
+              uninstallMe
+              popd >/dev/null ;;
+        # Find out what we have before
+        "-w") pushd "${VIMCOMPILEHOME}" >/dev/null
+              whatMadeMe
+              popd >/dev/null ;;
+        ,*) pushd "."
+              helpMe ;;
+    esac
+else # We don't have $1
+    helpMe
+fi
+
+echo "Ending... bye"
+
+#+END_SRC
+* Makefile
+    :PROPERTIES:
+    :header-args: makefile :tangle Makefile
+    :END:
+
+This is a dirt-simple Makefile that will hopefully install vimmake into a system-wide location.
+It will need several runs at this, and I need to remember that recipes start off with a flush-left
+line, followed by tabbed recipe instructions.
+
+I deliberately haven't used "install" as I don't know what it does. I've also embedded a sudo inside
+the makefile, which probably isn't a great idea either, but hey, it's my own machine. This is also
+not for use on a Windows or MS-DOS/FreeDOS install. Free/NetBSD will probably need doas, not sudo.
+To be frank, it doesn't care where it's put, as long as it can be called from somewhere on the user's
+PATH.
+
+One other thing? It takes absolutely no notice of any other path but DESTDIR.
+
+#+BEGIN_SRC makefile -i
+# Dirt-simple Makefile to install the vimmaker script
+# v0.1 Initial cut - it only has to install one thing.
+
+DESTDIR = /usr/local/bin
+
+install: vimmaker
+	@sudo cp -v vimmaker ${DESTDIR}/
+	@sudo chmod -v +x ${DESTDIR}/vimmaker
+
+uninstall:
+	@sudo rm -v ${DESTDIR}/vimmaker
+
+
+#+END_SRC
+
+* Conclusions
+This was originally a fairly clean script, which would have been easy enough to understand without
+the extra descriptions. There's not a lot to this one, but I felt I needed to add a little
+clarification at certain spots. I've also tried to make it more "portable" between Vim versions.
+
+There's also no config file, and one could be used to help clean the script up. Reasonable defaults
+would still be needed.
+
+* Bits to add
+Select interpreter support for scripts, such as whether we need python/perl/lua/etc. So far it's
+pre-canned.

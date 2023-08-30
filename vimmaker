@@ -1,0 +1,421 @@
+#!/bin/bash
+#
+# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit vim project
+#
+# TODO: rework to remove what's left of the emacsisms.
+
+#######################
+# Modifiable parameters
+# You WILL want to fiddle with these if you don't want the args I chose
+# This WILL break if the user running (EUID) isn't the same as the user owning the source directory
+# i.e. if there's no /root/src/c/vim
+#VIMCOMPILEHOME="${HOME}/src/c/vim" # Should be specific, not user-relative
+
+# Provide for the option to feed these vars in from the outside
+# and allows us to pull in from somewhere else
+VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
+# Place to put Vim (root of tree)
+VIMHOME=${VIMHOME:-"/usr/local"}
+# Default, but check the configMe functions further down. Can't feed this in from user's env.
+
+# Currently this is mostly correct, I'm not sure if anything else needs adding.
+# I've deliberately left out these two lines as they don't work for me yet:
+#    "--enable-mzschemeinterp"
+#    "--with-plthome=/usr/local"
+
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"
+    "--prefix=${VIMHOME}"
+)
+# Default X toolkit if we don't change it with a -c{g2,g3,m,n} option
+WMGR=gtk3
+
+###########
+# Functions
+
+# Help function, usage(), ugly hack to put in toolkits
+VIMCONFIGPARAMSGTK2=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk2"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSGTK3=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSMOTIF=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=motif"
+    "--prefix=${VIMHOME}"
+)
+VIMCONFIGPARAMSNOX=( # You know I just had to do it
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=no"
+    "--prefix=${VIMHOME}"
+)
+
+helpMe() {
+    echo "$0: Vim recompiler script"
+    echo "   -h   help (this text)"
+    echo "   -d   Runs 'make distclean'"
+    echo "   -a   Runs  every step except execute"
+    echo "   -e   run every step; distclean, configure, make, install, run"
+    echo "        default Vim binary location is ${VIMHOME}"
+    echo "   -c   run ./configure with params ${VIMCONFIGPARAMS[@]}"
+    echo "        this selects something sensible for the target machine"
+    echo "   -cg3 run ./configure with params ${VIMCONFIGPARAMSGTK3[@]}"
+    echo "   -cg2 run ./configure with params ${VIMCONFIGPARAMSGTK2[@]}"
+    echo "   -cm  run ./configure with params ${VIMCONFIGPARAMSMOTIF[@]}"
+    echo "   -cn  run ./configure with params ${VIMCONFIGPARAMSNOX[@]}"
+    echo "   -m   compile (no install), runs make"
+    echo "   -i   install to ${VIMHOME}, runs make install"
+    echo "   -mi  combines compile and install steps"
+    echo "   -u   uninstall from ${VIMHOME}, runs make uninstall"
+}
+
+# Runs make clean, but only if the configure step had created a Makefile.
+# TODO: no chance to break out of this, perhaps we should offer that
+cleanMe() {
+    if [[ -f Makefile ]]; then
+	echo "This will REMOVE all compiled files including makefiles"
+	make clean
+    else
+	echo "Makefile not found, skipping"
+    fi
+}
+
+# Same proviso as above, this command takes immediate effect
+cleanMeGood() {
+    if [[ -f Makefile ]]; then
+	echo "This will REMOVE all compiled files including makefiles"
+	make distclean
+    else
+	echo "Makefile not found, skipping"
+    fi
+}
+
+# Runs configure phase, runs autogen if configure isn't here already
+# This just does GTK3 unless VIMCONFIGPARAMS[] is changed from a calling function
+configMe() {
+    if [[ -f ./configure ]]; then
+        CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+    else
+        # Is this even relevant for vim?
+        ./autogen.sh # fails if autotools not installed
+        if [[ ! -f configure ]]; then
+            echo "Failed to create configure, do you have autotools installed?"
+        else
+            CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+        fi
+    fi
+}
+
+# Should support the GTK1 crowd but here, just grabs gtk3
+configMeGTK() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"   # because gtk2 is ever so slightly broken here
+    "--prefix=${VIMHOME}" )
+    WMGR=gtk # (might be gtk3)
+    configMe
+}
+
+# Should support the GTK2 crowd too
+configMeGTK2() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk2"
+    "--prefix=${VIMHOME}" )
+    WMGR=gtk2
+    configMe
+}
+
+
+# Default unless something else chosen, simply call configMe
+configMeGtk3() {
+    configMe
+}
+
+# Choose this if you actually have a Motif or LessTif
+configMeMotif() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=motif"
+    "--prefix=${VIMHOME}" )
+    WMGR=motif
+    configMe
+}
+
+# Choose this if you don't want an Vim with X (creates vim-nox)
+configMeNoX() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=no"
+    "--prefix=${VIMHOME}" )
+    WMGR=nox
+    configMe
+}
+
+# Runs make (hopefully we ran configure first)
+makeMe() {
+    if [[ -f Makefile ]]; then
+	make -j4 # because we want it faster
+    else
+	echo "No Makefile found, perhaps run with -c first?"
+    fi
+}
+
+# Find what I made already, this is normally called from installMe
+whatMadeMe() {
+    # Piece to load into an array so I can parse the --with-x-toolkit parameter
+    # VERY sensitive to configure output - if it changes, then this won't work.
+    # If I search for $ ./configure I'll find the right line.
+    if [[ -f src/auto/config.log ]]; then
+        pushd src/auto >/dev/null # don't forget to popd after this
+        mapfile -t TOOLKIT < <(sed -n '/\$ .\/configure/p' config.log | cut -c17-)
+        popd >/dev/null
+        for this in ${TOOLKIT[@]}; do
+            case "${this}" in
+                "--enable-gui=gtk") WMGR=gtk ;; # Works out to be gtk3 here
+                "--enable-gui=gtk2") WMGR=gtk2 ;;
+                "--enable-gui=gtk3") WMGR=gtk3 ;;
+                "--enable-gui=motif") WMGR=motif ;;
+                "--enable-gui=no") WMGR=nox ;; # No X gui here, just terminal/ncurses.
+            esac # We can simply ignore everything else
+        done # for this in ${TOOLKIT}
+        printf "Toolkit is: %s\n" ${WMGR}
+    else
+        echo "I don't think you ran configure in ${VIMCOMPILEHOME}. Please rerun vimmaker with a -c parameter"
+        popd >/dev/null # just to keep the stack straight
+        exit 1 # Shouldn't really exit here
+    fi
+}
+
+# This copies the delivered binary ${VIMHOME}/bin/vim to vim-${VERSION}-$[WMGR}
+# which will be something like vim-{gtk2,gtk3,motif}
+# May not work for versions earlier than 8
+copyMe() {
+    # If we fail to find a vim here, we failed to install
+    if [[ -f ${VIMHOME}/bin/vim ]]; then
+        VIMTGT="${VIMHOME}/bin/vim"
+        echo "Linking ${VIMHOME}/bin/${VIMTGT} to ${VIMHOME}/bin/${VIMTGT}-${WMGR}"
+        # There should perhaps be a sudo/doas here
+        sudo cp -iv ${VIMHOME}/bin/${VIMTGT} ${VIMHOME}/bin/${VIMTGT}-${WMGR}
+    else
+        echo "$0: we couldn't find a vim at ${VIMHOME} or ${WMGR} isn't set."
+    fi
+}
+
+# Runs the install phase (currently don't need sudo, but would have normally done)
+installMe() {
+    # echo "This will require you to enter in your password" # only needed for system dirs
+    # sudo make install
+    # TODO: should check that there's an Vim binary first, but I don't know where that will be
+    # First, find out what we made from what's been left behind in the last compile
+    whatMadeMe
+    if [[ -z ${WMGR} ]]; then
+        echo "No toolkit selected (not even -nox), you should probably have run vimmaker -c"
+    fi
+    # There should perhaps be a sudo/doas here
+    sudo make install
+    copyMe
+}
+
+# Uninstall from $VIMHOME
+uninstallMe() {
+    # The only requirements are that I've installed Vim at VIMHOME
+    # and NOT reconfigured Vim since
+    if [[ -f "${VIMHOME}/bin/vim" ]]; then
+        make uninstall
+    else
+        echo "Are you sure you installed Vim to ${VIMHOME}?"
+    fi
+}
+
+# Assuming everything else is done, runs compiled Vim from install
+runMe() {
+    pushd "${VIMHOME}"
+    # Hm. What do I do here? with-emacs won't run vim. 
+    RETVAL=$( with-emacs.sh "${VIMRUNARGS[@]}" )
+    if [[ "${RETVAL}" != 0 ]]; then
+        echo "Completed with ${RETVAL}"
+    else
+        echo "Completed with success"
+    fi
+    popd >/dev/null
+}
+
+# Do almost everything
+execMakeMe() {
+    cleanMe # it's a distclean
+    configMe
+    makeMe
+}
+
+# Do everything except runMe - may require sudo
+execMe() {
+    execMakeMe # distclean, config and make
+    installMe # Don't add copyMe to this, it's called from here already
+#    runMe
+}
+
+########
+# main()
+
+if [[ -n $2 ]]; then # In short, if 2 or more args
+    echo "$0: Too many arguments, we only need one of the following"
+    helpMe
+elif [[ -n $1 ]]; then
+    case $1 in 
+        "-h"|"--help"|"-?") helpMe ;;
+        "-d") pushd "${VIMCOMPILEHOME}" >/dev/null
+              cleanMe
+              popd >/dev/null ;;
+	"-D") pushd "${VIMCOMPILEHOME}" >/dev/null
+              cleanMeGood
+              popd >/dev/null ;;
+        "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
+              execMakeMe
+              popd >/dev/null ;;
+        "-e") pushd "${VIMCOMPILEHOME}" >/dev/null # Eventually changes to ${VIMHOME}
+              execMe
+              popd >/dev/null ;;
+        "-c") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMe
+              popd >/dev/null ;; # Uses GTK3 with xwidgets
+        "-cg") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeGTK
+              popd >/dev/null ;;
+        "-cg2") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeGTK2
+              popd >/dev/null ;;
+        "-cl") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeLucid
+              popd >/dev/null ;;
+        "-cm") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeMotif
+              popd >/dev/null ;;
+        "-cn") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeNoX
+              popd >/dev/null ;;
+        "-m") pushd "${VIMCOMPILEHOME}" >/dev/null
+              makeMe
+              popd >/dev/null ;;
+        "-i") pushd "${VIMCOMPILEHOME}" >/dev/null
+              installMe
+              popd >/dev/null ;;
+        # Let's do this all here
+        "-mi") pushd "${VIMCOMPILEHOME}">/dev/null
+              makeMe
+              installMe
+              popd >/dev/null ;;
+        "-r") pushd "${VIMHOME}">/dev/null
+              runMe
+              popd >/dev/null ;;
+	"-u") pushd "${VIMCOMPILEHOME}" >/dev/null
+              uninstallMe
+              popd >/dev/null ;;
+        # Find out what we have before
+        "-w") pushd "${VIMCOMPILEHOME}" >/dev/null
+              whatMadeMe
+              popd >/dev/null ;;
+        *) pushd "."
+              helpMe ;;
+    esac
+else # We don't have $1
+    helpMe
+fi
+
+echo "Ending... bye"
