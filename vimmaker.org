@@ -140,8 +140,8 @@ can't support env vars from the outside either.
 VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
-# Default, but check the configMe functions further down. Can't feed this in from user's env.
 
+# Default, but check the configMe functions further down. Can't feed this in from user's env.
 # Currently this is mostly correct, I'm not sure if anything else needs adding.
 # I've deliberately left out these two lines as they don't work for me yet:
 #    "--enable-mzschemeinterp"
@@ -169,10 +169,7 @@ WMGR=gtk3
 ** Functions
 *** Help function
 
-The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). There's also a slight bug with VIMCONFIGPARAMS
-if I decide I want to show non-default window toolkits. So far I've added
-gtk, gtk2, gtk3 (the default), lucid and Motif toolkits. I haven't bothered
-with -nw, as I'm always on a desktop with an Xorg server running.
+The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). GUI (gtk2, in this case) is enabled, but can be turned off in these settings.
 
 #+BEGIN_SRC bash -i
 ###########
