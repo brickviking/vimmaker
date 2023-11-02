@@ -1,8 +1,11 @@
 #!/bin/bash
 #
-# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit vim project
+# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit Vim project.
+# v0.15 Made some more Vim-specific tweaks to the README.
+# v0.16 Changed vim in prose to Vim where it makes sense to.
 #
 # TODO: rework to remove what's left of the emacsisms.
+# TODO: bring up to parity with emacsmake.
 
 #######################
 # Modifiable parameters
@@ -12,7 +15,7 @@
 #VIMCOMPILEHOME="${HOME}/src/c/vim" # Should be specific, not user-relative
 
 # Provide for the option to feed these vars in from the outside
-# and allows us to pull in from somewhere else
+# and allows us to pull in from somewhere else. This should be user-neutral.
 VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
@@ -152,7 +155,7 @@ configMe() {
     if [[ -f ./configure ]]; then
         CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
     else
-        # Is this even relevant for vim?
+        # Is this even relevant for Vim?
         ./autogen.sh # fails if autotools not installed
         if [[ ! -f configure ]]; then
             echo "Failed to create configure, do you have autotools installed?"
@@ -228,7 +231,7 @@ VIMCONFIGPARAMS=(
     configMe
 }
 
-# Choose this if you don't want an Vim with X (creates vim-nox)
+# Choose this if you don't want a Vim with X (creates vim-nox)
 configMeNoX() {
 VIMCONFIGPARAMS=(
     "--enable-luainterp=dynamic"
@@ -287,14 +290,14 @@ whatMadeMe() {
 # which will be something like vim-{gtk2,gtk3,motif}
 # May not work for versions earlier than 8
 copyMe() {
-    # If we fail to find a vim here, we failed to install
+    # If we fail to find a Vim here, we failed to install
     if [[ -f ${VIMHOME}/bin/vim ]]; then
         VIMTGT="${VIMHOME}/bin/vim"
         echo "Linking ${VIMHOME}/bin/${VIMTGT} to ${VIMHOME}/bin/${VIMTGT}-${WMGR}"
         # There should perhaps be a sudo/doas here
         sudo cp -iv ${VIMHOME}/bin/${VIMTGT} ${VIMHOME}/bin/${VIMTGT}-${WMGR}
     else
-        echo "$0: we couldn't find a vim at ${VIMHOME} or ${WMGR} isn't set."
+        echo "$0: we couldn't find a Vim at ${VIMHOME} or ${WMGR} isn't set."
     fi
 }
 
@@ -302,7 +305,7 @@ copyMe() {
 installMe() {
     # echo "This will require you to enter in your password" # only needed for system dirs
     # sudo make install
-    # TODO: should check that there's an Vim binary first, but I don't know where that will be
+    # TODO: should check that there's a Vim binary first, but I don't know where that will be
     # First, find out what we made from what's been left behind in the last compile
     whatMadeMe
     if [[ -z ${WMGR} ]]; then
@@ -327,7 +330,7 @@ uninstallMe() {
 # Assuming everything else is done, runs compiled Vim from install
 runMe() {
     pushd "${VIMHOME}"
-    # Hm. What do I do here? with-emacs won't run vim. 
+    # Hm. What do I do here? with-emacs won't run Vim. 
     RETVAL=$( with-emacs.sh "${VIMRUNARGS[@]}" )
     if [[ "${RETVAL}" != 0 ]]; then
         echo "Completed with ${RETVAL}"

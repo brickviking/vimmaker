@@ -11,18 +11,17 @@ this is a licence, I haven't come up with a usable licence yet.
   :header-args: org :tangle README.org
   :END:
 
-
 #+BEGIN_SRC org -i
 ,* Introduction
-This is a very simple wrapper script to clean, configure, make, install and execute Vim.
+This is a very simple wrapper script to clean, configure, make and install Vim.
 Changes can be made to the variables inside the script, which will help drive how Vim can be
-compiled, installed and executed. It started life as emacsmake, but has since morphed. Funny, that.
+compiled and installed. It started life as emacsmake, but has since morphed. Funny, that.
 
 ,* Variables and requirements
-First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME=. You can either
-fetch and extract a static tarball of the source, or you can access either of the git repositories.
+First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script. You can either
+fetch and extract a static tarball of the source, or you can access either the git repository or its Mercurial mirror.
 
-Tarballs are usually a fixed point in the stage of Vim development, but git repositories have
+Tarballs are usually a fixed point in the stage of Vim development, but git repositories often have
 multiple threads of development, meaning there's a requirement to select the correct one if you
 don't simply want to use the latest available code, often labeled the master branch. This is always
 a moving target, so people often select a version branch, or perhaps a specific point in one of
@@ -32,9 +31,9 @@ Tarballs are created at these points, making them useful for snapshots where not
 change in the future. It also means there's no expected future additions to that development unless
 you make the effort to update on a regular basis.
 
-If you grab code from the git repositories, be aware that there are multiple branches of Vim code
+If you grab code from the git or mercurial repositories, be aware that there are multiple branches of Vim code
 that you can build, so check out what's available for compiling, select one, and you'll be off. You
-will of course need to know how to use git, and how to select the correct branch of Vim to
+will of course need to know how to use git or hg, and how to select the correct branch of Vim to
 compile.
 
 '** Compile requirements
@@ -48,12 +47,12 @@ the Vim binary itself. Usually directories will be created below this point for 
 binaries and the compiled script code to live. The usual place that is selected if you don't specify
 it would be =/usr/local=, just as with a lot of other configure-based build systems.
 
-If you're also going to compile with support for other things such as libjansson, then make sure the 
+If you're also going to compile with support for other things such as Motif, then make sure the 
 required -dev/-devel packages are also installed. You'll probably want to include support for
 interpreters such as python, perl and maybe even lua.
 
 ,* Executing Vim
-Simply type in =vim= at the command line. That's it. For a graphical vim, you can use gvim, or you
+Simply type in =vim= at the command line. That's it. For a graphical Vim, you can use gvim, or you
 can use =vim -g= instead. I suspect one is symlinked to the other, though I haven't confirmed that.
 
 ,* Future directions
@@ -89,6 +88,8 @@ v0.12 Begin process of pulling in vars from environment if already provided.
 v0.13 Now we've got the main x-toolkit targets, how about --without-x?
 v0.14v This has become a branch split off from the original emacsmake project, now
        called vimmaker and reversioned to 0.1
+v0.15 Made some more Vim-specific tweaks to the README
+v0.16 Changed vim in prose to Vim where it makes sense to.
 
 ** Header and Changelog
 A few notes made about things added/changed, along with a long-term target to meet for Vim
@@ -97,9 +98,12 @@ versions earlier than 8. That rather depends on how far the commit history goes 
 #+BEGIN_SRC bash
 #!/bin/bash
 #
-# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit vim project
+# v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit Vim project.
+# v0.15 Made some more Vim-specific tweaks to the README.
+# v0.16 Changed vim in prose to Vim where it makes sense to.
 #
 # TODO: rework to remove what's left of the emacsisms.
+# TODO: bring up to parity with emacsmake.
 #+END_SRC
 
 ** Parameters
@@ -136,7 +140,7 @@ can't support env vars from the outside either.
 #VIMCOMPILEHOME="${HOME}/src/c/vim" # Should be specific, not user-relative
 
 # Provide for the option to feed these vars in from the outside
-# and allows us to pull in from somewhere else
+# and allows us to pull in from somewhere else. This should be user-neutral.
 VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
@@ -302,7 +306,7 @@ configMe() {
     if [[ -f ./configure ]]; then
         CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
     else
-        # Is this even relevant for vim?
+        # Is this even relevant for Vim?
         ./autogen.sh # fails if autotools not installed
         if [[ ! -f configure ]]; then
             echo "Failed to create configure, do you have autotools installed?"
@@ -378,7 +382,7 @@ VIMCONFIGPARAMS=(
     configMe
 }
 
-# Choose this if you don't want an Vim with X (creates vim-nox)
+# Choose this if you don't want a Vim with X (creates vim-nox)
 configMeNoX() {
 VIMCONFIGPARAMS=(
     "--enable-luainterp=dynamic"
@@ -456,7 +460,7 @@ whatMadeMe() {
 }
 #+END_SRC
 
-This piece copies the generated vim binary at the destination to a backup that has the X toolkit
+This piece copies the generated Vim binary at the destination to a backup that has the X toolkit
 name appended.
 
 #+BEGIN_SRC bash -i
@@ -464,14 +468,14 @@ name appended.
 # which will be something like vim-{gtk2,gtk3,motif}
 # May not work for versions earlier than 8
 copyMe() {
-    # If we fail to find a vim here, we failed to install
+    # If we fail to find a Vim here, we failed to install
     if [[ -f ${VIMHOME}/bin/vim ]]; then
         VIMTGT="${VIMHOME}/bin/vim"
         echo "Linking ${VIMHOME}/bin/${VIMTGT} to ${VIMHOME}/bin/${VIMTGT}-${WMGR}"
         # There should perhaps be a sudo/doas here
         sudo cp -iv ${VIMHOME}/bin/${VIMTGT} ${VIMHOME}/bin/${VIMTGT}-${WMGR}
     else
-        echo "$0: we couldn't find a vim at ${VIMHOME} or ${WMGR} isn't set."
+        echo "$0: we couldn't find a Vim at ${VIMHOME} or ${WMGR} isn't set."
     fi
 }
 
@@ -488,7 +492,7 @@ name.
 installMe() {
     # echo "This will require you to enter in your password" # only needed for system dirs
     # sudo make install
-    # TODO: should check that there's an Vim binary first, but I don't know where that will be
+    # TODO: should check that there's a Vim binary first, but I don't know where that will be
     # First, find out what we made from what's been left behind in the last compile
     whatMadeMe
     if [[ -z ${WMGR} ]]; then
@@ -521,7 +525,7 @@ some configuration and didn't want to clobber the existing .vimrc or .vim/* file
 # Assuming everything else is done, runs compiled Vim from install
 runMe() {
     pushd "${VIMHOME}"
-    # Hm. What do I do here? with-emacs won't run vim. 
+    # Hm. What do I do here? with-emacs won't run Vim. 
     RETVAL=$( with-emacs.sh "${VIMRUNARGS[@]}" )
     if [[ "${RETVAL}" != 0 ]]; then
         echo "Completed with ${RETVAL}"
@@ -664,7 +668,7 @@ not for use on a Windows or MS-DOS/FreeDOS install. Free/NetBSD will probably ne
 To be frank, it doesn't care where it's put, as long as it can be called from somewhere on the
 user's PATH.
 
-Bear in mind that all the major Linux distributions have vim in their repositories, and vim is
+Bear in mind that all the major Linux distributions have Vim in their repositories, and Vim is
 most definitely in the BSD ports.
 
 One other thing? It takes absolutely no notice of any other path but DESTDIR.
