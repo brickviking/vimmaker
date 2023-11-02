@@ -16,8 +16,8 @@
 VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
-# Default, but check the configMe functions further down. Can't feed this in from user's env.
 
+# Default, but check the configMe functions further down. Can't feed this in from user's env.
 # Currently this is mostly correct, I'm not sure if anything else needs adding.
 # I've deliberately left out these two lines as they don't work for me yet:
 #    "--enable-mzschemeinterp"
@@ -380,9 +380,6 @@ elif [[ -n $1 ]]; then
               popd >/dev/null ;;
         "-cg2") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeGTK2
-              popd >/dev/null ;;
-        "-cl") pushd "${VIMCOMPILEHOME}" >/dev/null
-              configMeLucid
               popd >/dev/null ;;
         "-cm") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeMotif
