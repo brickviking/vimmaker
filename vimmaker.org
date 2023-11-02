@@ -431,7 +431,7 @@ makeMe() {
     if [[ -f Makefile ]]; then
 	make -j4 # because we want it faster
     else
-	echo "No Makefile found, perhaps run with -c first?"
+	echo "No Makefile found, perhaps run with -c/-cn/-cm/-cg2/-cg3 first?"
     fi
 }
 #+END_SRC
