@@ -259,12 +259,13 @@ helpMe() {
     echo "   -mi  combines compile and install steps"
     echo "   -u   uninstall from ${VIMHOME}, runs make uninstall"
 }
+
 #+END_SRC
 
 *** Cleaning scripts distclean/maintainer-clean
 
-Clean basically removes almost everything that didn't come with the source code, and
-distclean removes everything that was generated, leaving only the original code.  I'm not
+Clean basically removes anything compiled from the source code, and distclean removes 
+everything that was generated, leaving only the original code as delivered.  I'm not
 sure about the distinction, though I used to know. One point I've noted is that neither command is
 gatekeepered, i.e. they both take immediate effect without the ability to back out.
 
