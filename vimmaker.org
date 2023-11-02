@@ -360,6 +360,21 @@ VIMCONFIGPARAMS=(
 
 # Default unless something else chosen, simply call configMe
 configMeGtk3() {
+VIMCONFIGPARAMS=(
+    "--enable-luainterp=dynamic"
+    "--enable-perlinterp=dynamic"
+    "--enable-pythoninterp=dynamic"
+    "--enable-python3interp=dynamic"
+    "--enable-rubyinterp=dynamic"
+    "--enable-tclinterp=dynamic"
+    "--disable-selinux"
+    "--enable-cscope"
+    "--enable-terminal"
+    "--with-tlib=ncurses"
+    "--with-ex-name=viex"
+    "--enable-gui=gtk3"
+    "--prefix=${VIMHOME}" )
+    WMGR=gtk3
     configMe
 }
 
