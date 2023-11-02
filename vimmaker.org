@@ -422,8 +422,8 @@ VIMCONFIGPARAMS=(
 
 *** Make command
 
-The only note here is that we force a full recompile so we don't accidentally install stale .elc
-files from previous compiles.
+There's nothing much of note here, just that I use four cores to compile with. You may have more
+cores you wish to throw at compiling.
 
 #+BEGIN_SRC bash -i
 # Runs make (hopefully we ran configure first)
