@@ -561,7 +561,7 @@ in main().
 #+BEGIN_SRC bash -i
 # Do almost everything
 execMakeMe() {
-    cleanMe # it's a distclean
+    cleanMe # it's a clean, not a distclean
     configMe
     makeMe
 }
