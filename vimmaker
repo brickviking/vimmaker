@@ -308,9 +308,9 @@ copyMe() {
     # If we fail to find a Vim here, we failed to install
     if [[ -f ${VIMHOME}/bin/vim ]]; then
         VIMTGT="${VIMHOME}/bin/vim"
-        echo "Linking ${VIMHOME}/bin/${VIMTGT} to ${VIMHOME}/bin/${VIMTGT}-${WMGR}"
+        echo "Linking ${VIMTGT} to ${VIMTGT}-${WMGR}"
         # There should perhaps be a sudo/doas here
-        sudo cp -iv ${VIMHOME}/bin/${VIMTGT} ${VIMHOME}/bin/${VIMTGT}-${WMGR}
+        sudo cp -iv ${VIMTGT} ${VIMTGT}-${WMGR}
     else
         echo "$0: we couldn't find a Vim at ${VIMHOME} or ${WMGR} isn't set."
     fi
