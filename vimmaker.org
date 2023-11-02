@@ -456,7 +456,7 @@ whatMadeMe() {
     # If I search for $ ./configure I'll find the right line.
     if [[ -f src/auto/config.log ]]; then
         pushd src/auto >/dev/null # don't forget to popd after this
-        mapfile -t TOOLKIT < <(sed -n '/\$ .\/configure/p' config.log | cut -c17-)
+        mapfile -t TOOLKIT < <(sed -n '/\$ auto\/configure/p' config.log | cut -c17-)
         popd >/dev/null
         for this in ${TOOLKIT[@]}; do
             case "${this}" in
