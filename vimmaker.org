@@ -308,7 +308,8 @@ helpMe() {
 
 Patching (of course) will generally be up to the user. This will just run "git pull" at the top of the tree
 for the currently-selected branch. We should run make distclean first before we git pull.
-Unfortunately, this doesn't handle patched-already files.
+Unfortunately, this doesn't handle patched-already files. It also doesn't work with a tree that didn't
+come from git, such as a source tarball extraction.
 
 #+BEGIN_SRC bash -i
 # This can generally update the git tree in the manner prescribed by the user.
