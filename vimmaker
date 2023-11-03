@@ -128,6 +128,31 @@ helpMe() {
     echo "   -u   uninstall from ${VIMHOME}, runs make uninstall"
 }
 
+# This can generally update the git tree in the manner prescribed by the user.
+gitMe() {
+    make distclean # This just makes sure that we have no stray files left lying around
+    git pull # This doesn't take account of patch files already applied.
+}
+
+# This can generally patch the source tree in the manner prescribed by the user.
+# Leave suitable patches in the patches/ directory.
+# This does not take account of already-patched files. Beware. May error
+# if there are no patch files.
+patchMe() {
+    for t in patches/*.patch; do
+       patch -p1<${t}
+    done
+}
+
+# This is meant to apply the patches in reverse order. Errors if there are none.
+unPatchMe() {
+    local demFiles=(patches/*.patch)
+#    for t in patches/*.patch; do
+     for ((t=${#demFiles[@]}-1; t>=0; t--)); do
+        patch -Rp1<${demFiles[$t]}
+    done
+}
+
 # Runs make clean, but only if the configure step had created a Makefile.
 # TODO: no chance to break out of this, perhaps we should offer that
 cleanMe() {

@@ -262,6 +262,46 @@ helpMe() {
 
 #+END_SRC
 
+*** Update source tree with git
+
+Patching (of course) will generally be up to the user. This will just run "git pull" at the top of the tree
+for the currently-selected branch. We should run make distclean first before we git pull.
+Unfortunately, this doesn't handle patched-already files.
+
+#+BEGIN_SRC bash -i
+# This can generally update the git tree in the manner prescribed by the user.
+gitMe() {
+    make distclean # This just makes sure that we have no stray files left lying around
+    git pull # This doesn't take account of patch files already applied.
+}
+
+#+END_SRC
+
+*** Patching
+I have no patches at the moment, but I'll add the possibility to the code nonetheless.
+
+#+BEGIN_SRC bash -i
+# This can generally patch the source tree in the manner prescribed by the user.
+# Leave suitable patches in the patches/ directory.
+# This does not take account of already-patched files. Beware. May error
+# if there are no patch files.
+patchMe() {
+    for t in patches/*.patch; do
+       patch -p1<${t}
+    done
+}
+
+# This is meant to apply the patches in reverse order. Errors if there are none.
+unPatchMe() {
+    local demFiles=(patches/*.patch)
+#    for t in patches/*.patch; do
+     for ((t=${#demFiles[@]}-1; t>=0; t--)); do
+        patch -Rp1<${demFiles[$t]}
+    done
+}
+
+#+END_SRC
+
 *** Cleaning scripts distclean/maintainer-clean
 
 Clean basically removes anything compiled from the source code, and distclean removes 
