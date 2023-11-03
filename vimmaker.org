@@ -6,9 +6,34 @@
 This is a simple script to create Vim from its source code. About the only thing missing from
 this is a licence, I haven't come up with a usable licence yet.
 
+:CONTENTS:
+- [[#readme-in-org-format][Readme, in org format]]
+- [[#main-file][Main file]]
+  - [[#version-history][Version History]]
+  - [[#header-and-changelog][Header and Changelog]]
+  - [[#parameters][Parameters]]
+  - [[#functions][Functions]]
+    - [[#help-function][Help function]]
+    - [[#update-source-tree-with-git][Update source tree with git]]
+    - [[#patching][Patching]]
+    - [[#cleaning-scripts][Cleaning scripts]]
+    - [[#configure-compilation][Configure Vim for compilation]]
+    - [[#make-commands][Make commands]]
+    - [[#installuninstall][Install/uninstall]]
+    - [[#running][Running]]
+    - [[#do-everything][Do-everything section]]
+  - [[#main-function][Main function]]
+- [[#makefile][Makefile]]
+- [[#conclusions][Conclusions]]
+- [[#bits-to-add][Bits to add]]
+:END:
+
+
+
 * Readme, in org format
   :PROPERTIES:
   :header-args: org :tangle README.org
+  :custom-id: readme-in-org-format
   :END:
 
 #+BEGIN_SRC org -i
@@ -66,9 +91,13 @@ issues section of this project.
 * Main file
     :PROPERTIES:
     :header-args: bash :tangle vimmaker :tangle-mode (identity #o755)
+    :CUSTOM_ID: main-file
     :END:
 
 ** Version history
+    :PROPERTIES:
+    :CUSTOM_ID: version-history
+    :END:
 
 + v0.1 :: Initial cut, should be mostly complete.
 + v0.2 :: Changes to account for mistakes I made.
@@ -107,6 +136,9 @@ versions earlier than 8. That rather depends on how far the commit history goes 
 #+END_SRC
 
 ** Parameters
+  :PROPERTIES:
+  :CUSTOM_ID: parameters
+  :END:
 
 So far, the only thing of note here is that we need a specific directory to be explicitly mentioned
 so that calling this from sudo doesn't bork with messages such as:
@@ -171,7 +203,14 @@ WMGR=gtk3
 #+END_SRC
 
 ** Functions
+    :PROPERTIES:
+    :CUSTOM_ID: functions
+    :END:
+
 *** Help function
+    :PROPERTIES:
+    :CUSTOM_ID: help-function
+    :END:
 
 The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). GUI (gtk2, in this case) is enabled, but can be turned off in these settings.
 
@@ -263,6 +302,9 @@ helpMe() {
 #+END_SRC
 
 *** Update source tree with git
+    :PROPERTIES:
+    :CUSTOM_ID: update-source-tree-with-git
+    :END:
 
 Patching (of course) will generally be up to the user. This will just run "git pull" at the top of the tree
 for the currently-selected branch. We should run make distclean first before we git pull.
@@ -278,6 +320,10 @@ gitMe() {
 #+END_SRC
 
 *** Patching
+    :PROPERTIES:
+    :CUSTOM_ID: patching
+    :END:
+
 I have no patches at the moment, but I'll add the possibility to the code nonetheless.
 
 #+BEGIN_SRC bash -i
@@ -303,6 +349,9 @@ unPatchMe() {
 #+END_SRC
 
 *** Cleaning scripts distclean/maintainer-clean
+    :PROPERTIES:
+    :CUSTOM_ID: cleaning-scripts-distclean
+    :END:
 
 Clean basically removes anything compiled from the source code, and distclean removes 
 everything that was generated, leaving only the original code as delivered.  I'm not
@@ -333,6 +382,9 @@ cleanMeGood() {
 #+END_SRC
 
 *** Configure Vim for compilation
+  :PROPERTIES:
+  :CUSTOM_ID: configure-compilation
+  :END:
 
 It's pretty obvious what this does, though it does presume we're in the correct directory, which we
 should be by the time we get here. Heck, if we weren't, something went badly wrong.
@@ -461,6 +513,10 @@ VIMCONFIGPARAMS=(
 #+END_SRC
 
 *** Make command
+    :PROPERTIES:
+    :CUSTOM_ID: make-commands
+    :END:
+
 
 There's nothing much of note here, just that I use four cores to compile with. You may have more
 cores you wish to throw at compiling.
@@ -477,6 +533,10 @@ makeMe() {
 #+END_SRC
 
 *** Install/uninstall
+    :PROPERTIES:
+    :CUSTOM_ID: installuninstall
+    :END:
+
 
 This is a way to find out what I already compiled, if I compiled it. We start off with a default
 of gtk3 in WMGR, which only changes if we find something specific. We don't really have to cut
@@ -573,6 +633,9 @@ uninstallMe() {
 #+END_SRC
 
 *** Running
+    :PROPERTIES:
+    :CUSTOM_ID: running
+    :END:
 
 This runs the just-installed Vim. Realistically I don't need this unless I was trying to test
 some configuration and didn't want to clobber the existing .vimrc or .vim/* files.
@@ -593,6 +656,9 @@ runMe() {
 #+END_SRC
 
 *** Do-everything section
+    :PROPERTIES:
+    :CUSTOM_ID: do-everything
+    :END:
 
 To call this, we just string all the sections together in a sequence. I've made no attempt to
 support multiple stages, and have explicitly disallowed this by only allowing one arg down further
@@ -616,6 +682,10 @@ execMe() {
 #+END_SRC
 
 ** Main
+    :PROPERTIES:
+    :CUSTOM_ID: main-function
+    :END:
+
 
 This handles the arg matching. We explicitly disallow multiple stages from being run, as we need to
 process things in a certain order and it's too complex for me to track what stages I've set,
@@ -746,6 +816,10 @@ uninstall:
 #+END_SRC
 
 * Conclusions
+    :PROPERTIES:
+    :CUSTOM_ID: conclusions
+    :END:
+
 This was originally a fairly clean script, which would have been easy enough to understand without
 the extra descriptions. There's not a lot to this one, but I felt I needed to add a little
 clarification at certain spots. I've also tried to make it more "portable" between Vim versions.
@@ -754,5 +828,9 @@ There's also no config file, and one could be used to help clean the script up. 
 would still be needed.
 
 * Bits to add
+    :PROPERTIES:
+    :CUSTOM_ID: bits-to-add
+    :END:
+
 Select interpreter support for scripts, such as whether we need python/perl/lua/etc. So far it's
 pre-canned.
