@@ -232,7 +232,7 @@ VIMCONFIGPARAMS=(
 
 
 # Default unless something else chosen, simply call configMe
-configMeGtk3() {
+configMeGTK3() {
 VIMCONFIGPARAMS=(
     "--enable-luainterp=dynamic"
     "--enable-perlinterp=dynamic"
@@ -423,6 +423,9 @@ elif [[ -n $1 ]]; then
               popd >/dev/null ;;
         "-cg2") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeGTK2
+              popd >/dev/null ;;
+        "-cg3") pushd "${VIMCOMPILEHOME}" >/dev/null
+              configMeGTK3
               popd >/dev/null ;;
         "-cm") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeMotif
