@@ -29,7 +29,6 @@ this is a licence, I haven't come up with a usable licence yet.
 :END:
 
 
-
 * Readme, in org format
   :PROPERTIES:
   :header-args: org :tangle README.org
@@ -59,7 +58,7 @@ you make the effort to update on a regular basis.
 If you grab code from the git or mercurial repositories, be aware that there are multiple branches of Vim code
 that you can build, so check out what's available for compiling, select one, and you'll be off. You
 will of course need to know how to use git or hg, and how to select the correct branch of Vim to
-compile.
+compile. Vim tends to do point releases each time, so if you grab the latest point-release tarball, that'll get you all the latest fixes—and possibly new bugs. Can't win them all, I guess.
 
 '** Compile requirements
 Because you're compiling Vim, you can choose which libraries to compile Vim with; adjust the
@@ -84,8 +83,9 @@ can use =vim -g= instead. I suspect one is symlinked to the other, though I have
 At this stage, I haven't got the foggiest idea what else I need, though I've already simplified this
 by removing the whole "execute Vim" stage, leaving that up to the normal instructions.
 
-The usual applies to anyone who wants to report bugs, issues or even suggestions, check out the
-issues section of this project.
+The usual applies to anyone who wants to report bugs, issues or even suggestions with vimmaker,
+check out the issues section of this project. If you want to report bugs with vim itself, go back
+to the Vim project page.
 
 #+END_SRC
 * Main file
