@@ -728,7 +728,10 @@ elif [[ -n $1 ]]; then
 	"-D") pushd "${VIMCOMPILEHOME}" >/dev/null
               cleanMeGood
               popd >/dev/null ;;
-        "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-g") pushd "${VIMCOMPILEHOME}" >/dev/null
+              gitMe
+              popd >/dev/null ;;
+     "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
               execMakeMe
               popd >/dev/null ;;
         "-e") pushd "${VIMCOMPILEHOME}" >/dev/null # Eventually changes to ${VIMHOME}
