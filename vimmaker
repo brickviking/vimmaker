@@ -125,6 +125,7 @@ helpMe() {
     echo "   -m   compile (no install), runs make"
     echo "   -i   install to ${VIMHOME}, runs make install"
     echo "   -mi  combines compile and install steps"
+    echo "   -mat  make all the above toolkits (nox, motif, gtk2 and gtk3)"
     echo "   -u   uninstall from ${VIMHOME}, runs make uninstall"
 }
 
