@@ -533,6 +533,38 @@ makeMe() {
 }
 #+END_SRC
 
+
+This function assumes that because we want "everything", that is, all the toolkits, it also
+assumes that we'll have run distclean, git, patch before entering this.
+
+This should do the following:
++ nox. (-cn, -m, -i)
++ motif (-cm, make -j4, -i); from here, don't run bootstrap (speeds things up)
++ gtk2 (-cg2, make -j4, -i)
++ gtk3 (-c, make -j4, -i); we install this last so it ends up being the default
+
+#+BEGIN_SRC bash -i
+# Yes, we want to make and install all the toolkits
+makeAllToolkits() {
+    # First, the -nox (the next ones don't really matter what order)
+    configMeNoX
+    makeMe
+    installMe
+    # Then motif, no need to rebuild .elc, but *.eln could be a problem
+    configMeMotif
+    makeMe
+    installMe
+    # gtk2
+    configMeGtk2
+    makeMe
+    installMe
+    # and last, the default of gtk3
+    configMeGtk3
+    makeMe
+    installMe
+}
+#+END_SRC
+
 *** Install/uninstall
     :PROPERTIES:
     :CUSTOM_ID: installuninstall
@@ -760,6 +792,10 @@ elif [[ -n $1 ]]; then
               popd >/dev/null ;;
         "-i") pushd "${VIMCOMPILEHOME}" >/dev/null
               installMe
+              popd >/dev/null ;;
+        ;; This makes all the relevant toolkits (motif, nox, gtk2/gtk3)
+        "-mat") pushd "${VIMCOMPILEHOME}" >/dev/null
+              makeAllToolkits
               popd >/dev/null ;;
         # Let's do this all here
         "-mi") pushd "${VIMCOMPILEHOME}">/dev/null
