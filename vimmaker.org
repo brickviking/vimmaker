@@ -60,7 +60,7 @@ that you can build, so check out what's available for compiling, select one, and
 will of course need to know how to use git or hg, and how to select the correct branch of Vim to
 compile. Vim tends to do point releases each time, so if you grab the latest point-release tarball, that'll get you all the latest fixes—and possibly new bugs. Can't win them all, I guess.
 
-'** Compile requirements
+,** Compile requirements
 Because you're compiling Vim, you can choose which libraries to compile Vim with; adjust the
 =VIMCONFIGPARAMS= array for this. You might want to check the output of =./configure --help= from
 within the source directory to see what parameters are supported.
