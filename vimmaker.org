@@ -794,7 +794,7 @@ elif [[ -n $1 ]]; then
         "-i") pushd "${VIMCOMPILEHOME}" >/dev/null
               installMe
               popd >/dev/null ;;
-        ;; This makes all the relevant toolkits (motif, nox, gtk2/gtk3)
+        # This makes all the relevant toolkits (motif, nox, gtk2/gtk3)
         "-mat") pushd "${VIMCOMPILEHOME}" >/dev/null
               makeAllToolkits
               popd >/dev/null ;;
