@@ -312,7 +312,7 @@ makeAllToolkits() {
     makeMe
     installMe
     # gtk2
-    configMeGtk2
+    configMeGTK2
     makeMe
     installMe
     # and last, the default of gtk3
