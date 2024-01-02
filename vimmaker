@@ -356,7 +356,7 @@ copyMe() {
         VIMTGT="${VIMHOME}/bin/vim"
         echo "Linking ${VIMTGT} to ${VIMTGT}-${WMGR}"
         # There should perhaps be a sudo/doas here
-        sudo cp -iv ${VIMTGT} ${VIMTGT}-${WMGR}
+        sudo cp -v ${VIMTGT} ${VIMTGT}-${WMGR}
     else
         echo "$0: we couldn't find a Vim at ${VIMHOME} or ${WMGR} isn't set."
     fi
