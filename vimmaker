@@ -25,6 +25,7 @@ VIMHOME=${VIMHOME:-"/usr/local"}
 # I've deliberately left out these two lines as they don't work for me yet:
 #    "--enable-mzschemeinterp"
 #    "--with-plthome=/usr/local"
+# I've also specifically changed the name of ex so it doesn't conflict with historical ex install.
 
 VIMCONFIGPARAMS=(
     "--enable-luainterp=dynamic"

@@ -163,6 +163,10 @@ The concept would be:
 Currently variables just get set to whatever made sense in the script, but there's no reason why we
 can't support env vars from the outside either.
 
+I've also specifically changed the name of ex so it doesn't conflict with historical ex install.
+There's a to-be-addressed issue about the gvim symlink only making sense for the last-installed vim,
+(usually GTK3) and not other gui clients that are not GTK3 (GTK2/Motif).
+
 #+BEGIN_SRC bash -i
 #######################
 # Modifiable parameters
@@ -182,6 +186,7 @@ VIMHOME=${VIMHOME:-"/usr/local"}
 # I've deliberately left out these two lines as they don't work for me yet:
 #    "--enable-mzschemeinterp"
 #    "--with-plthome=/usr/local"
+# I've also specifically changed the name of ex so it doesn't conflict with historical ex install.
 
 VIMCONFIGPARAMS=(
     "--enable-luainterp=dynamic"
