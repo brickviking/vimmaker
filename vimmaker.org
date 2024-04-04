@@ -124,6 +124,9 @@ to the Vim project page.
 + v0.16 :: Changed vim in prose to Vim where it makes sense to.
 
 ** Header and Changelog
+  :PROPERTIES:
+  :CUSTOM_ID: headers-and-changelog
+
 A few notes made about things added/changed, along with a long-term target to meet for Vim
 versions earlier than 8. That rather depends on how far the commit history goes back.
 
@@ -834,6 +837,7 @@ echo "Ending... bye"
 * Makefile
     :PROPERTIES:
     :header-args: makefile :tangle Makefile
+    :custom_id: makefile
     :END:
 
 This is a dirt-simple Makefile that will hopefully install vimmake into a system-wide location.
