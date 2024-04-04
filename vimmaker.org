@@ -32,7 +32,7 @@ this is a licence, I haven't come up with a usable licence yet.
 * Readme, in org format
   :PROPERTIES:
   :header-args: org :tangle README.org
-  :custom-id: readme-in-org-format
+  :custom_id: readme-in-org-format
   :END:
 
 #+BEGIN_SRC org -i
