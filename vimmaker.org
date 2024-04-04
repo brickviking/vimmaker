@@ -125,7 +125,7 @@ to the Vim project page.
 
 ** Header and Changelog
   :PROPERTIES:
-  :CUSTOM_ID: headers-and-changelog
+  :CUSTOM_ID: header-and-changelog
 
 A few notes made about things added/changed, along with a long-term target to meet for Vim
 versions earlier than 8. That rather depends on how far the commit history goes back.
