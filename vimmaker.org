@@ -16,7 +16,7 @@ this is a licence, I haven't come up with a usable licence yet.
     - [[#help-function][Help function]]
     - [[#update-source-tree-with-git][Update source tree with git]]
     - [[#patching][Patching]]
-    - [[#cleaning-scripts][Cleaning scripts]]
+    - [[#cleaning-scripts-distclean][Cleaning scripts]]
     - [[#configure-compilation][Configure Vim for compilation]]
     - [[#make-commands][Make commands]]
     - [[#installuninstall][Install/uninstall]]
@@ -126,6 +126,7 @@ to the Vim project page.
 ** Header and Changelog
   :PROPERTIES:
   :CUSTOM_ID: header-and-changelog
+  :END:
 
 A few notes made about things added/changed, along with a long-term target to meet for Vim
 versions earlier than 8. That rather depends on how far the commit history goes back.
