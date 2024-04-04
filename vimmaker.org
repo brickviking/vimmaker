@@ -74,7 +74,9 @@ it would be =/usr/local=, just as with a lot of other configure-based build syst
 
 If you're also going to compile with support for other things such as Motif, then make sure the 
 required -dev/-devel packages are also installed. You'll probably want to include support for
-interpreters such as python, perl and maybe even lua.
+interpreters such as python, perl and maybe even lua. As yet, support for mzscheme is somewhat
+flakey, and I can't get it to work properly with the version I have. I'd recommend asking the vim
+greybeards to see what they say. That is, after they clean up the coffee from laughing.
 
 ,* Executing Vim
 Simply type in =vim= at the command line. That's it. For a graphical Vim, you can use gvim, or you
