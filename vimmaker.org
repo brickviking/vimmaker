@@ -81,8 +81,20 @@ it would be =/usr/local=, just as with a lot of other configure-based build syst
 If you're also going to compile with support for other things such as Motif, then make sure the 
 required -dev/-devel packages are also installed. You'll probably want to include support for
 interpreters such as python, perl and maybe even lua. As yet, support for mzscheme is somewhat
-flakey, and I can't get it to work properly with the version I have. I'd recommend asking the vim
+flakey, and I can't get it to work properly with the version I have. I'd recommend asking the Vim
 greybeards to see what they say. That is, after they clean up the coffee from laughing.
+
+Settings for all of the variations that vimmaker supports is in the VIMCONFIGPARAMS* variables.
+There's a basic VIMCONFIGPARAMS if you don't happen to select a specific version of Vim to compile.
+In that case, you'll get a gtk3 version. For other selections (Motif, etc) check VIMCONFIGPARAMSGTK2
+or VIMCONFIGPARAMSNOX or VIMCONFIGPARAMSMOTIF, and alter all variables so they match for supported 
+plugins.
+
+,** Installing a freshly-compiled Vim
+Once you have compiled Vim, with whatever changes you've made, you'll need to get it installed
+in the location you've chosen. If you haven't specifically chosen a location, then Vim's default install
+location will be /usr/local/bin, as it would be for most configured software. The vimmaker program
+can assist with this, of course.
 
 ,* Executing Vim
 Simply type in =vim= at the command line. That's it. For a graphical Vim, you can use gvim, or you
