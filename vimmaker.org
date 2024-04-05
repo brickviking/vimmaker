@@ -21,7 +21,7 @@ this is a licence, I haven't come up with a usable licence yet.
     - [[#configure-compilation][Configure Vim for compilation]]
     - [[#make-commands][Make commands]]
     - [[#installuninstall][Install/uninstall]]
-    - [[#running][Running]]
+    - [[#runningvim][Running Vim]]
     - [[#do-everything][Do-everything section]]
   - [[#main-function][Main function]]
 - [[#makefile][Makefile]]
@@ -679,9 +679,9 @@ uninstallMe() {
 
 #+END_SRC
 
-*** Running
+*** Running vim
     :PROPERTIES:
-    :CUSTOM_ID: running
+    :CUSTOM_ID: runningvim
     :END:
 
 This runs the just-installed Vim. Realistically I don't need this unless I was trying to test
