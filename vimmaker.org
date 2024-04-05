@@ -1,6 +1,7 @@
 #+TITLE: Vim Maker script
 #+AUTHOR: brickviking
 #+EMAIL: brickviking@gmail.com
+#+STARTUP: showeverything
 
 * Introduction
 This is a simple script to create Vim from its source code. About the only thing missing from
