@@ -114,6 +114,7 @@ helpMe() {
     echo "$0: Vim recompiler script"
     echo "   -h   help (this text)"
     echo "   -d   Runs 'make distclean'"
+    echo "   -g   Runs 'make distclean', then gets newest git source on current branch"
     echo "   -a   Runs  every step except execute"
     echo "   -e   run every step; distclean, configure, make, install, run"
     echo "        default Vim binary location is ${VIMHOME}"
