@@ -430,14 +430,14 @@ preinstalled configure somewhere in the ${PATH}.
 # This just does GTK3 unless VIMCONFIGPARAMS[] is changed from a calling function
 configMe() {
     if [[ -f ./configure ]]; then
-        CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+        CFLAGS="-fPIC -O2" ./configure "${VIMCONFIGPARAMS[@]}"
     else
         # Is this even relevant for Vim?
         ./autogen.sh # fails if autotools not installed
         if [[ ! -f configure ]]; then
             echo "Failed to create configure, do you have autotools installed?"
         else
-            CFLAGS="-fPIC" ./configure "${VIMCONFIGPARAMS[@]}"
+            CFLAGS="-fPIC -O2" ./configure "${VIMCONFIGPARAMS[@]}"
         fi
     fi
 }
