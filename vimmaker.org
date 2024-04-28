@@ -423,22 +423,17 @@ It's pretty obvious what this does, though it does presume we're in the correct 
 should be by the time we get here. Heck, if we weren't, something went badly wrong.
 
 I learned to specify the location of the configure directly, so I don't accidentally pick up on a
-preinstalled configure somewhere in the ${PATH}.
+preinstalled configure somewhere in the ${PATH}. In addition, we should always find a configure here
+as it's delivered from git that way, and is probably part of the source release tarballs.
 
 #+BEGIN_SRC bash -i
-# Runs configure phase, runs autogen if configure isn't here already
+# Runs configure phase. configure should never be missing, as it's part of the deliverables.
 # This just does GTK3 unless VIMCONFIGPARAMS[] is changed from a calling function
 configMe() {
     if [[ -f ./configure ]]; then
         CFLAGS="-fPIC -O2" ./configure "${VIMCONFIGPARAMS[@]}"
     else
-        # Is this even relevant for Vim?
-        ./autogen.sh # fails if autotools not installed
-        if [[ ! -f configure ]]; then
-            echo "Failed to create configure, do you have autotools installed?"
-        else
-            CFLAGS="-fPIC -O2" ./configure "${VIMCONFIGPARAMS[@]}"
-        fi
+      echo "Failed to find configure, have you checked out the source tree?"
     fi
 }
 
