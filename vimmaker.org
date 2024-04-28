@@ -868,7 +868,9 @@ user's PATH.
 Bear in mind that all the major Linux distributions have Vim in their repositories, and Vim is
 most definitely in the BSD ports.
 
-One other thing? It takes absolutely no notice of any other path but DESTDIR.
+One other thing? It takes absolutely no notice of any other path but DESTDIR. The Makefile will
+install the vim program and doc files properly, I've left that alone. Really the only thing I use
+destdir for is to do a copy of the vim binary to a name with the toolkit appended.
 
 #+BEGIN_SRC makefile -i
 # Dirt-simple Makefile to install the vimmaker script
