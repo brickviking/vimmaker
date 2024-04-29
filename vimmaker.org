@@ -38,10 +38,10 @@ this is a licence, I haven't come up with a usable licence yet.
 
 #+BEGIN_SRC org -i
 ,* Introduction
-This is a very simple wrapper script to clean (remove previously compiled results of make process), 
-configure, make and install Vim.
-Changes can be made to the variables inside the script, which will help drive how Vim can be
-compiled and installed. It started life as emacsmake, but has since morphed. Funny, that.
+This is a very simple wrapper script to clean (remove previously compiled results of make process),
+configure, make and install Vim.  Changes can be made to the variables inside the script, which will
+help drive how Vim can be compiled and installed. It started life as emacsmake, but has since
+morphed. Funny, that.
 
 Bear in mind that all the major Linux distributions have the binary release of Vim in their
 repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
@@ -49,8 +49,9 @@ users that wish to have a bit of a hand compiling vim by hand, and not merely ru
 defaults that are provided by those distributions of Linux and BSD.
 
 ,* Variables and requirements
-First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script. You can either
-fetch and extract a static tarball of the source, or you can access either the git repository or its Mercurial mirror.
+First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script.
+You can either fetch and extract a static tarball of the source, or you can access either the git
+repository or its Mercurial mirror.
 
 Tarballs are usually a fixed point in the stage of Vim development, but git repositories often have
 multiple threads of development, meaning there's a requirement to select the correct one if you
@@ -62,10 +63,11 @@ Tarballs are created at these points, making them useful for snapshots where not
 change in the future. It also means there's no expected future additions to that development unless
 you make the effort to update on a regular basis.
 
-If you grab code from the git or mercurial repositories, be aware that there are multiple branches of Vim code
-that you can build, so check out what's available for compiling, select one, and you'll be off. You
-will of course need to know how to use git or hg, and how to select the correct branch of Vim to
-compile. Vim tends to do point releases each time, so if you grab the latest point-release tarball, that'll get you all the latest fixes—and possibly new bugs. Can't win them all, I guess.
+If you grab code from the git or mercurial repositories, be aware that there are multiple branches
+of Vim code that you can build, so check out what's available for compiling, select one, and you'll
+be off. You will of course need to know how to use git or hg, and how to select the correct branch
+of Vim to compile. Vim tends to do point releases each time, so if you grab the latest point-release
+tarball, that'll get you all the latest fixes—and possibly new bugs. Can't win them all, I guess.
 
 ,** Refreshing git contents
 The vimmaker script can usually update the Vim source code if you happened to install it from the
