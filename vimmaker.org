@@ -871,7 +871,7 @@ users that wish to have a bit of a hand compiling vim by hand.
 
 One other thing? It takes absolutely no notice of any other path but DESTDIR. The Makefile will
 install the vim program and doc files properly, I've left that alone. Really the only thing I use
-destdir for is to do a copy of the vim binary to a name with the toolkit appended.
+destdir for is to do a copy of the vimmaker script to the correct destination.
 
 #+BEGIN_SRC makefile -i
 # Dirt-simple Makefile to install the vimmaker script
