@@ -855,7 +855,7 @@ echo "Ending... bye"
     :custom_id: makefile
     :END:
 
-This is a dirt-simple Makefile that will hopefully install vimmake into a system-wide location.
+This is a dirt-simple Makefile that will hopefully install vimmaker into a system-wide location.
 It will need several runs at this, and I need to remember that recipes start off with a flush-left
 line, followed by tabbed recipe instructions.
 
