@@ -43,6 +43,11 @@ configure, make and install Vim.
 Changes can be made to the variables inside the script, which will help drive how Vim can be
 compiled and installed. It started life as emacsmake, but has since morphed. Funny, that.
 
+Bear in mind that all the major Linux distributions have the binary release of Vim in their
+repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
+users that wish to have a bit of a hand compiling vim by hand, and not merely running with the
+defaults that are provided by those distributions of Linux and BSD.
+
 ,* Variables and requirements
 First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script. You can either
 fetch and extract a static tarball of the source, or you can access either the git repository or its Mercurial mirror.
@@ -864,10 +869,6 @@ the makefile, which probably isn't a great idea either, but hey, it's my own mac
 not for use on a Windows or MS-DOS/FreeDOS install. Free/NetBSD will probably need doas, not sudo.
 To be frank, it doesn't care where it's put, as long as it can be called from somewhere on the
 user's PATH.
-
-Bear in mind that all the major Linux distributions have the binary release of Vim in their
-repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
-users that wish to have a bit of a hand compiling vim by hand.
 
 #+BEGIN_SRC makefile -i
 # Dirt-simple Makefile to install the vimmaker script
