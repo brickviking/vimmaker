@@ -115,6 +115,7 @@ helpMe() {
     echo "   -h   help (this text)"
     echo "   -d   Runs 'make distclean'"
     echo "   -g   Runs 'make distclean', then gets newest git source on current branch"
+    echo "   -hg   Runs 'make distclean', then gets newest mercurial source on current branch"
     echo "   -a   Runs  every step except execute"
     echo "   -e   run every step; distclean, configure, make, install, run"
     echo "        default Vim binary location is ${VIMHOME}"
@@ -135,6 +136,13 @@ helpMe() {
 gitMe() {
     make distclean # This just makes sure that we have no stray files left lying around
     git pull # This doesn't take account of patch files already applied.
+}
+
+# This can generally update the mercurial tree in the manner prescribed by the user.
+# Note that the mercurial repository is a mirror of the official git repository.
+mercurialMe() {
+    make distclean # This just makes sure that we have no stray files left lying around
+    hg pull # This doesn't take account of patch files already applied.
 }
 
 # This can generally patch the source tree in the manner prescribed by the user.
@@ -428,6 +436,9 @@ elif [[ -n $1 ]]; then
               popd >/dev/null ;;
         "-g") pushd "${VIMCOMPILEHOME}" >/dev/null
               gitMe
+              popd >/dev/null ;;
+        "-hg"|"-mercurial") pushd "${VIMCOMPILEHOME}" >/dev/null
+              mercurialMe
               popd >/dev/null ;;
         "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
               execMakeMe

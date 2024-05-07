@@ -16,6 +16,7 @@ this is a licence, I haven't come up with a usable licence yet.
   - [[#functions][Functions]]
     - [[#help-function][Help function]]
     - [[#update-source-tree-with-git][Update source tree with git]]
+    - [[#update-source-tree-with-mercurial][Update source tree with mercurial]]
     - [[#patching][Patching]]
     - [[#cleaning-scripts-distclean][Cleaning scripts]]
     - [[#configure-compilation][Configure Vim for compilation]]
@@ -39,9 +40,9 @@ this is a licence, I haven't come up with a usable licence yet.
 #+BEGIN_SRC org -i
 ,* Introduction
 This is a very simple wrapper script to clean (remove previously compiled results of make process),
-fetch from git, configure, make and install Vim.  Changes can be made to the variables inside the
-script, which will help drive how Vim can be compiled and installed. It started life as emacsmake,
-but has since morphed. Funny, that.
+fetch from git (or mercurial), configure, make and install Vim.  Changes can be made to the variables
+ inside the script, which will help drive how Vim can be compiled and installed. It started life as
+ emacsmake, but has since morphed. Funny, that.
 
 Bear in mind that all the major Linux distributions have the binary release of Vim in their
 repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
@@ -322,6 +323,7 @@ helpMe() {
     echo "   -h   help (this text)"
     echo "   -d   Runs 'make distclean'"
     echo "   -g   Runs 'make distclean', then gets newest git source on current branch"
+    echo "   -hg   Runs 'make distclean', then gets newest mercurial source on current branch"
     echo "   -a   Runs  every step except execute"
     echo "   -e   run every step; distclean, configure, make, install, run"
     echo "        default Vim binary location is ${VIMHOME}"
@@ -355,6 +357,27 @@ come from git, such as a source tarball extraction.
 gitMe() {
     make distclean # This just makes sure that we have no stray files left lying around
     git pull # This doesn't take account of patch files already applied.
+}
+
+#+END_SRC
+
+*** Update source tree with mercurial
+    :PROPERTIES:
+    :CUSTOM_ID: update-source-tree-with-mercurial
+    :END:
+
+Much like the above command, this will just run "hg pull" at the top of the tree for the
+currently-selected branch. We should run make distclean first before we hg pull.  Unfortunately,
+this doesn't handle patched-already files. It also doesn't work with a tree that didn't come from
+the mercurial repository, such as a source tarball extraction. Additionally, it's made clear that
+the hg repository is a mirror of the official vim repository hosted by github.
+
+#+BEGIN_SRC bash -i
+# This can generally update the mercurial tree in the manner prescribed by the user.
+# Note that the mercurial repository is a mirror of the official git repository.
+mercurialMe() {
+    make distclean # This just makes sure that we have no stray files left lying around
+    hg pull # This doesn't take account of patch files already applied.
 }
 
 #+END_SRC
@@ -796,6 +819,9 @@ elif [[ -n $1 ]]; then
               popd >/dev/null ;;
         "-g") pushd "${VIMCOMPILEHOME}" >/dev/null
               gitMe
+              popd >/dev/null ;;
+        "-hg"|"-mercurial") pushd "${VIMCOMPILEHOME}" >/dev/null
+              mercurialMe
               popd >/dev/null ;;
         "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
               execMakeMe
