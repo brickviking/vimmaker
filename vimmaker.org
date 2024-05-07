@@ -39,10 +39,12 @@ this is a licence, I haven't come up with a usable licence yet.
 
 #+BEGIN_SRC org -i
 ,* Introduction
-This is a very simple wrapper script to clean (remove previously compiled results of make process),
-fetch from git (or mercurial), configure, make and install Vim.  Changes can be made to the variables
- inside the script, which will help drive how Vim can be compiled and installed. It started life as
- emacsmake, but has since morphed. Funny, that.
+This is a very simple wrapper script that started life as  emacsmake, but has since morphed.
+Funny, that.
+
+It allows a user to return the vim source tree back to pre-compiled condition, update from git
+(or mercurial), configure, make and install Vim.  Changes can be made to the variables inside the
+script, which will help drive how Vim can be compiled and installed. 
 
 Bear in mind that all the major Linux distributions have the binary release of Vim in their
 repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
