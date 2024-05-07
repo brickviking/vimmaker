@@ -320,7 +320,9 @@ VIMCONFIGPARAMSNOX=( # You know I just had to do it
 )
 
 helpMe() {
-    echo "$0: Vim recompiler script"
+    echo "$0: Vim recompiler script for source code at:"
+    echo "     ${VIMCOMPILEHOME}"
+    echo "Change VIMCOMPILEHOME if this is not correct"
     echo "   -h   help (this text)"
     echo "   -d   Runs 'make distclean'"
     echo "   -g   Runs 'make distclean', then gets newest git source on current branch"
