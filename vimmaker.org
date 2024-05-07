@@ -51,8 +51,8 @@ defaults that are provided by those distributions of Linux and BSD.
 
 ,* Variables and requirements
 First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script.
-You can either fetch and extract a static tarball of the source, or you can access either the git
-repository or its Mercurial mirror.
+You can either fetch and extract a static tarball of the source, or you can access either the
+official github repository or its Mercurial mirror.
 
 Tarballs are usually a fixed point in the stage of Vim development, but git repositories often have
 multiple threads of development, meaning there's a requirement to select the correct one if you
