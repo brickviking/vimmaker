@@ -1,8 +1,8 @@
 * Introduction
 This is a very simple wrapper script to clean (remove previously compiled results of make process),
-configure, make and install Vim.  Changes can be made to the variables inside the script, which will
-help drive how Vim can be compiled and installed. It started life as emacsmake, but has since
-morphed. Funny, that.
+fetch from git, configure, make and install Vim.  Changes can be made to the variables inside the
+script, which will help drive how Vim can be compiled and installed. It started life as emacsmake,
+but has since morphed. Funny, that.
 
 Bear in mind that all the major Linux distributions have the binary release of Vim in their
 repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
