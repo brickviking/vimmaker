@@ -210,7 +210,8 @@ There's a to-be-addressed issue about the gvim symlink only making sense for the
 
 # Provide for the option to feed these vars in from the outside
 # and allows us to pull in from somewhere else. This should be user-neutral.
-VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
+# Previously set to VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
+VIMCOMPILEHOME=${VIMCOMPILEHOME:-"${HOME}/src/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
 
