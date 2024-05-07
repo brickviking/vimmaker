@@ -74,14 +74,15 @@ be off. You will of course need to know how to use git or hg, and how to select 
 of Vim to compile. Vim tends to do point releases each time, so if you grab the latest point-release
 tarball, that'll get you all the latest fixes—and possibly new bugs. Can't win them all, I guess.
 
-,** Refreshing git contents
+,** Refreshing git/mercurial contents
 The vimmaker script can usually update the Vim source code if you happened to install it from the
-git repository. Once you've done this, compile results will no longer match the newly-updated git
-sources, so they'll be removed before an update and recompile.
+github repository or its mercurial mirror. Once you've done this, compile results will no longer
+match the newly-updated github/mercurial sources, so they'll be removed before an update and
+recompile.
 
 ,** Compile requirements
 Because you're compiling Vim, you can choose which libraries to compile Vim with; adjust the
-=VIMCONFIGPARAMS= array for this. You might want to check the output of =./configure --help= from
+=VIMCONFIGPARAMS= array for this. You will want to check the output of =./configure --help= from
 within the source directory to see what parameters are supported.
 
 This will include choosing the place to put the compiled version of Vim, adjust =VIMHOME=. Note
@@ -97,16 +98,19 @@ flakey, and I can't get it to work properly with the version I have. I'd recomme
 greybeards to see what they say. That is, after they clean up the coffee from laughing.
 
 Settings for all of the variations that vimmaker supports is in the VIMCONFIGPARAMS* variables.
-There's a basic VIMCONFIGPARAMS if you don't happen to select a specific version of Vim to compile.
+Run =vimmaker -h= to get a basic list of what configure settings you can pass in. There's a basic
+VIMCONFIGPARAMS if you don't happen to select a specific version of Vim to compile.
+
 In that case, you'll get a gtk3 version. For other selections (Motif, etc) check VIMCONFIGPARAMSGTK2
-or VIMCONFIGPARAMSNOX or VIMCONFIGPARAMSMOTIF, and alter all variables so they match for supported 
+or VIMCONFIGPARAMSNOX or VIMCONFIGPARAMSMOTIF, and alter all variables so they match for supported
 plugins.
 
 ,** Installing a freshly-compiled Vim
 Once you have compiled Vim, with whatever changes you've made, you'll need to get it installed
 in the location you've chosen. If you haven't specifically chosen a location, then Vim's default install
 location will be /usr/local/bin, as it would be for most configured software. The vimmaker program
-can assist with this, of course.
+can assist with this, of course. You're probably going to need to have the ability to sudo if you
+use a location outside of your home directory.
 
 ,* Executing Vim
 Simply type in =vim= at the command line. That's it. For a graphical Vim, you can use gvim, or you
