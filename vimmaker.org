@@ -189,17 +189,6 @@ so that calling this from sudo doesn't bork with messages such as:
 
 Anyhow, there are some other tweakable values here which make sense.
 
-Another thought—we could perhaps pull in our VIMCONFIGPARAMS from a created-at-first-run file.
-The concept would be:
-+ If we don't have a defaults file already
-  + prompt user for "Choose, or defaults" (*)
-  + write file back (for next time)
-+ otherwise, read that file, and prompt user
-  + Defaults are ....., do you wish to change these?
-  + if so, select other defaults
-  + write file back (for next time)
-
-(*) We need to tweak VIMCOMPILEHOME, VIMHOME and VIMCONFIGPARAMS.
 
 Currently variables just get set to whatever made sense in the script, but there's no reason why we
 can't support env vars from the outside either.
@@ -941,6 +930,20 @@ An option will be added in the future to set the place where vim is stored, or t
 initial git/mercurial clone operation to download the source for the first time. I have yet to work
 out how to do that, as it'll rely upon a config file stored somewhere in the user's
 ${XDG_CONFIG_HOME} location, or nearest equivalent.
+
+We could perhaps pull in our VIMCONFIGPARAMS from that created-at-first-run config file.
+The concept would be:
++ If we don't have a defaults file already
+  + prompt user for "Choose, or defaults"
+    + VIMCOMPILEHOME is for where to store the source
+    + VIMHOME  is the equivalent of DESTDIR in common scenarios
+    + VIMCONFIGPARAMS is the collection of config tweaks needed for vim
+  + write file back (for next time)
++ otherwise, read that file, and prompt user
+  + Defaults are ....., do you wish to change these?
+  + if so, select other defaults
+  + ask user if they want to save those as the new defaults
+  + if so, write file back (for next time). Otherwise leave file as it was.
 
 * Bits to add
     :PROPERTIES:
