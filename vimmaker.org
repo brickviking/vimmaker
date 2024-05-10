@@ -937,6 +937,11 @@ clarification at certain spots. I've also tried to make it more "portable" betwe
 There's also no config file, and one could be used to help clean the script up. Reasonable defaults
 would still be needed.
 
+An option will be added in the future to set the place where vim is stored, or the place to do an
+initial git/mercurial clone operation to download the source for the first time. I have yet to work
+out how to do that, as it'll rely upon a config file stored somewhere in the user's ${XDGCONFIG}
+location, or nearest equivalent.
+
 * Bits to add
     :PROPERTIES:
     :CUSTOM_ID: bits-to-add
