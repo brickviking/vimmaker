@@ -939,8 +939,8 @@ would still be needed.
 
 An option will be added in the future to set the place where vim is stored, or the place to do an
 initial git/mercurial clone operation to download the source for the first time. I have yet to work
-out how to do that, as it'll rely upon a config file stored somewhere in the user's ${XDGCONFIG}
-location, or nearest equivalent.
+out how to do that, as it'll rely upon a config file stored somewhere in the user's
+${XDG_CONFIG_HOME} location, or nearest equivalent.
 
 * Bits to add
     :PROPERTIES:
