@@ -249,7 +249,7 @@ WMGR=gtk3
     :CUSTOM_ID: help-function
     :END:
 
-The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). GUI (gtk2, in this case) is enabled, but can be turned off in these settings.
+The boilerplate help just in case I forgot what switches I coded. Uses UNIX syntax (-x) not Microsoft (/x). GUI (gtk3, in this case) is enabled, but can be turned off in these settings.
 
 #+BEGIN_SRC bash -i
 ###########
