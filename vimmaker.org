@@ -472,27 +472,6 @@ configMe() {
     fi
 }
 
-# Should support the GTK1 crowd but here, just grabs gtk3
-configMeGTK() {
-VIMCONFIGPARAMS=(
-    "--enable-luainterp=dynamic"
-    "--enable-perlinterp=dynamic"
-    "--enable-pythoninterp=dynamic"
-    "--enable-python3interp=dynamic"
-    "--enable-rubyinterp=dynamic"
-    "--enable-tclinterp=dynamic"
-    "--with-tclsh=/usr/bin/tclsh8.6"
-    "--disable-selinux"
-    "--enable-cscope"
-    "--enable-terminal"
-    "--with-tlib=ncurses"
-    "--with-ex-name=viex"
-    "--enable-gui=gtk3"   # because gtk2 is ever so slightly broken here
-    "--prefix=${VIMHOME}" )
-    WMGR=gtk # (might be gtk3)
-    configMe
-}
-
 # Should support the GTK2 crowd too
 configMeGTK2() {
 VIMCONFIGPARAMS=(
@@ -513,7 +492,6 @@ VIMCONFIGPARAMS=(
     WMGR=gtk2
     configMe
 }
-
 
 # Default unless something else chosen, simply call configMe
 configMeGTK3() {
