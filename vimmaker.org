@@ -807,7 +807,7 @@ However, I could have used short/long switches like the following:
 #+END_QUOTE
 
 The -e:/--emacs: switch was the precursor for the "run Vim from this location instead" function
-from with-emacs.sh, but as the script does stuff better than I would have done, I left that up to
+from with-emacs.sh, but as that script does stuff better than I would have done, I left that up to
 the secondary script. It's not written by me, and the style is quite different - presumably someone
 who knows what they're doing.
 
