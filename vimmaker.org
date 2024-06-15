@@ -26,6 +26,7 @@ this is a licence, I haven't come up with a usable licence yet.
     - [[#do-everything][Do-everything section]]
   - [[#main-function][Main function]]
 - [[#makefile][Makefile]]
+- [[#bashautocomplete][Bash Autocomplete Script]]
 - [[#conclusions][Conclusions]]
 - [[#bits-to-add][Bits to add]]
 :END:
@@ -50,6 +51,9 @@ Bear in mind that all the major Linux distributions have the binary release of V
 repositories, and Vim is most definitely in the BSD ports tree. I'm providing vimmaker for those
 users that wish to have a bit of a hand compiling vim by hand, and not merely running with the
 defaults that are provided by those distributions of Linux and BSD.
+
+I have also included a bash autocompletion script, although it might rely on the user having some
+completion scripts in place already.
 
 ,* Variables and requirements
 First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script
@@ -787,7 +791,12 @@ However, I could have used short/long switches like the following:
 The -e:/--emacs: switch was the precursor for the "run Vim from this location instead" function
 from with-emacs.sh, but as that script does stuff better than I would have done, I left that up to
 the secondary script. It's not written by me, and the style is quite different - presumably someone
-who knows what they're doing.
+who knows what they're doing. I've therefore changed the -e switch so it distclean/config/compiles.
+I'll remove the configgtk switch, as it's very unlikely anyone still has any machines with only gtk1.
+
+Adding long switches where it makes sense - we'll need to adjust the bash-complete script too.
+Come to think of it, we can integrate that into this document to tangle along with the other script
+and keep them hopefully together.
 
 #+BEGIN_SRC bash -i
 ########
@@ -799,68 +808,65 @@ if [[ -n $2 ]]; then # In short, if 2 or more args
 elif [[ -n $1 ]]; then
     case $1 in 
         "-h"|"--help"|"-?") helpMe ;;
-        "-d") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-d"|"--clean") pushd "${VIMCOMPILEHOME}" >/dev/null
               cleanMe
               popd >/dev/null ;;
-	"-D") pushd "${VIMCOMPILEHOME}" >/dev/null
+	"-D"|"--distclean") pushd "${VIMCOMPILEHOME}" >/dev/null
               cleanMeGood
               popd >/dev/null ;;
-        "-g") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-g"|"--git") pushd "${VIMCOMPILEHOME}" >/dev/null
               gitMe
               popd >/dev/null ;;
-        "-hg"|"-mercurial") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-hg"|"--mercurial") pushd "${VIMCOMPILEHOME}" >/dev/null
               mercurialMe
               popd >/dev/null ;;
         "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
               execMakeMe
               popd >/dev/null ;;
-        "-e") pushd "${VIMCOMPILEHOME}" >/dev/null # Eventually changes to ${VIMHOME}
+        "-e"|"--executeall") pushd "${VIMCOMPILEHOME}" >/dev/null # Eventually changes to ${VIMHOME}
               execMe
               popd >/dev/null ;;
-        "-c") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-c"|"--config") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMe
               popd >/dev/null ;; # Uses GTK3 with xwidgets
-        "-cg") pushd "${VIMCOMPILEHOME}" >/dev/null
-              configMeGTK
-              popd >/dev/null ;;
-        "-cg2") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-cg2"|"--configgtk2") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeGTK2
               popd >/dev/null ;;
-        "-cg3") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-cg3"|"--configgtk3") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeGTK3
               popd >/dev/null ;;
-        "-cm") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-cm"|"--configmotif") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeMotif
               popd >/dev/null ;;
-        "-cn") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-cn"|"--confignox") pushd "${VIMCOMPILEHOME}" >/dev/null
               configMeNoX
               popd >/dev/null ;;
-        "-m") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-m"|"--make") pushd "${VIMCOMPILEHOME}" >/dev/null
               makeMe
               popd >/dev/null ;;
-        "-i") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-i"|"--install") pushd "${VIMCOMPILEHOME}" >/dev/null
               installMe
               popd >/dev/null ;;
         # This makes all the relevant toolkits (motif, nox, gtk2/gtk3)
-        "-mat") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-mat"|"--makealltoolkits") pushd "${VIMCOMPILEHOME}" >/dev/null
               makeAllToolkits
               popd >/dev/null ;;
         # Let's do this all here
-        "-mi") pushd "${VIMCOMPILEHOME}">/dev/null
+        "-mi"|"--makeandinstall") pushd "${VIMCOMPILEHOME}">/dev/null
               makeMe
               installMe
               popd >/dev/null ;;
-        "-r") pushd "${VIMHOME}">/dev/null
+        "-r"|"--run") pushd "${VIMHOME}">/dev/null
               runMe
               popd >/dev/null ;;
-	"-u") pushd "${VIMCOMPILEHOME}" >/dev/null
+	"-u"|"--uninstall") pushd "${VIMCOMPILEHOME}" >/dev/null
               uninstallMe
               popd >/dev/null ;;
         # Find out what we have before
-        "-w") pushd "${VIMCOMPILEHOME}" >/dev/null
+        "-w"|"--whatmademe") pushd "${VIMCOMPILEHOME}" >/dev/null
               whatMadeMe
               popd >/dev/null ;;
-        ,*) pushd "."
+        ,*) pushd "." # error out with help message on unrecognised parameter
               helpMe ;;
     esac
 else # We don't have $1
@@ -868,6 +874,68 @@ else # We don't have $1
 fi
 
 echo "Ending... bye"
+
+#+END_SRC
+* Bash Autocomplete script
+    :PROPERTIES:
+    :header-args: bash :tangle ~/.local/share/bash-completion/completions/vimmaker
+    :custom_id: bashautocomplete
+    :END:
+
+This is the autocomplete script for bash, it should really be updated every time I work with the
+menu switches in main().
+
+It's debatable whether I should simply modify it inline (a bad idea if I mess things up) or 
+manually install it (run the makefile) as the results would be the same in either case.
+A reason for the makefile variant is that the user can then stick it where they need, instead of 
+the position I arbitrarily put it into. After all, they may not already have their own 
+bash-complete scripts under ~/.local/
+
+#+BEGIN_SRC bash -i
+_vimmaker_module() {
+    local cur prev OPTS
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    OPTS="-h
+        --help
+	-d
+        --clean
+        -D
+        --distclean
+	-g
+        --git
+	-hg
+        --mercurial
+	-a
+	-e
+        --executeall
+	-c
+        --config
+	-cg3
+        --configgtk3
+	-cg2
+        --configgtk2
+	-cm
+        --configmotif
+	-cn
+        --confignox
+	-m
+        --make
+	-i
+        --install
+	-mi
+        --makeandinstall
+	-mat
+        --makealltoolkits
+	-u
+        --uninstall"
+    COMPREPLY=( $(compgen -W "${OPTS[*]}" -- $cur) )
+    return 0
+}
+
+complete -F _vimmaker_module vimmaker
 
 #+END_SRC
 * Makefile

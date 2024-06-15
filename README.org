@@ -11,6 +11,9 @@ repositories, and Vim is most definitely in the BSD ports tree. I'm providing vi
 users that wish to have a bit of a hand compiling vim by hand, and not merely running with the
 defaults that are provided by those distributions of Linux and BSD.
 
+I have also included a bash autocompletion script, although it might rely on the user having some
+completion scripts in place already.
+
 * Variables and requirements
 First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script
 if you wish to put it somewhere else than =${HOME}/src/vim=.
