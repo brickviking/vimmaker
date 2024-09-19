@@ -287,6 +287,9 @@ VIMCONFIGPARAMS=(
     configMe
 }
 
+# Let's get number of CPUs we wish to use
+NUMCPU=${}
+USECPU=${NUMCPU:-4}
 # Runs make (hopefully we ran configure first)
 makeMe() {
     if [[ -f Makefile ]]; then
