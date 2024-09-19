@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit Vim project.
 # v0.15 Made some more Vim-specific tweaks to the README.
