@@ -477,6 +477,16 @@ configMe() {
     fi
 }
 
+# Produces help output from ./configure --help
+configHelpMe() {
+  if [[ -f ./configure ]]; then
+        ./configure --help
+  else
+    echo "This source tree is incomplete, it is missing essential files."
+    exit 1 # no point in continuing, but stay in the place where things are wrong.
+  fi
+}
+
 # Should support the GTK2 crowd too
 configMeGTK2() {
 VIMCONFIGPARAMS=(
@@ -812,6 +822,9 @@ if [[ -n $2 ]]; then # In short, if 2 or more args
 elif [[ -n $1 ]]; then
     case $1 in 
         "-h"|"--help"|"-?") helpMe ;;
+        "-ch"|"--confighelp")  pushd "${VIMCOMPILEHOME}" >/dev/null
+              configHelpMe # this exits, so no point in popping dirstack
+          ;;
         "-d"|"--clean") pushd "${VIMCOMPILEHOME}" >/dev/null
               cleanMe
               popd >/dev/null ;;
