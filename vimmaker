@@ -4,6 +4,7 @@
 # v0.15 Made some more Vim-specific tweaks to the README.
 # v0.16 Changed vim in prose to Vim where it makes sense to.
 # v0.17 Added a separate mercurial clone tree (256bit.org)
+# v0.18 Initial work on using number of CPU cores to make project
 #
 # TODO: rework to remove what's left of the emacsisms.
 # TODO: bring up to parity with emacsmake.
@@ -300,6 +301,18 @@ VIMCONFIGPARAMS=(
     WMGR=nox
     configMe
 }
+
+# Let's get number of CPUs we wish to use
+MYOS="$(uname)"
+case ${MYOS} in 
+    "Linux")  NUMCPU=$(nproc) ;;
+    "FreeBSD"|"OpenBSD") NUMCPU="$(/sbin/sysctl hw.ncpu)"
+        NUMCPU=${NUMCPU:8} ;; # Freebsd: hw.ncpu: 2, OpenBSD: hw.ncpu=2
+    "NetBSD") NUMCPU="$(/sbin/sysctl hw.ncpu)"
+        NUMCPU=${NUMCPU:10} ;; # Format is:  hw.ncpu = 2
+# More to come
+esac
+unset MYOS # don't need this any more
 
 # Let's get number of CPUs we wish to use
 NUMCPU=${}

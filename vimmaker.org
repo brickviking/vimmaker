@@ -1,7 +1,7 @@
 #+TITLE: Vim Maker script
 #+AUTHOR: brickviking
 #+EMAIL: brickviking@gmail.com
-#+VERSION: 0.17
+#+VERSION: 0.18
 #+STARTUP: showeverything
 
 * Introduction
@@ -162,6 +162,7 @@ to the Vim project page.
 + v0.15 :: Made some more Vim-specific tweaks to the README
 + v0.16 :: Changed vim in prose to Vim where it makes sense to.
 + v0.17 :: Added a separate mercurial clone tree (256bit.org)
++ v0.18 :: Initial work on using number of CPU cores to make project
 
 ** Header and Changelog
   :PROPERTIES:
@@ -178,6 +179,7 @@ versions earlier than 8. That rather depends on how far the commit history goes 
 # v0.15 Made some more Vim-specific tweaks to the README.
 # v0.16 Changed vim in prose to Vim where it makes sense to.
 # v0.17 Added a separate mercurial clone tree (256bit.org)
+# v0.18 Initial work on using number of CPU cores to make project
 #
 # TODO: rework to remove what's left of the emacsisms.
 # TODO: bring up to parity with emacsmake.
@@ -576,6 +578,29 @@ VIMCONFIGPARAMS=(
     configMe
 }
 
+#+END_SRC
+*** Get num of CPUS for later use in makeMe
+Like the header says, this attempts to get the number of CPUs in the current machine
+so we can use it later on in the makeMe function.
+
+This hasn't made its way into makeMe and friends yet, that might be the next commit while I work out
+what a sensible figure would be.  For larger machines, I really don't want to be a "bad" citizen,
+though I do want to use up to 25% of cores if they're available, this rather assumes that we have
+cores to burn. In a smaller machine like mine, perhaps the -j4 should be enough up to 8 cores, then
+ramp it up if you're lucky enough to have 24 cores, or even 128 cores.
+
+#+BEGIN_SRC bash -i
+# Let's get number of CPUs we wish to use
+MYOS="$(uname)"
+case ${MYOS} in 
+    "Linux")  NUMCPU=$(nproc) ;;
+    "FreeBSD"|"OpenBSD") NUMCPU="$(/sbin/sysctl hw.ncpu)"
+        NUMCPU=${NUMCPU:8} ;; # Freebsd: hw.ncpu: 2, OpenBSD: hw.ncpu=2
+    "NetBSD") NUMCPU="$(/sbin/sysctl hw.ncpu)"
+        NUMCPU=${NUMCPU:10} ;; # Format is:  hw.ncpu = 2
+# More to come
+esac
+unset MYOS # don't need this any more
 #+END_SRC
 
 *** Make command
