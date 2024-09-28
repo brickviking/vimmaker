@@ -1,7 +1,7 @@
 #+TITLE: Vim Maker script
 #+AUTHOR: brickviking
 #+EMAIL: brickviking@gmail.com
-#+VERSION: 0.16
+#+VERSION: 0.17
 #+STARTUP: showeverything
 
 * Introduction
