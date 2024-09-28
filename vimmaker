@@ -3,6 +3,7 @@
 # v0.1 Initial clone from emacsmake-0.13, with a lot of tweaks to suit Vim project.
 # v0.15 Made some more Vim-specific tweaks to the README.
 # v0.16 Changed vim in prose to Vim where it makes sense to.
+# v0.17 Added a separate mercurial clone tree (256bit.org)
 #
 # TODO: rework to remove what's left of the emacsisms.
 # TODO: bring up to parity with emacsmake.
@@ -18,6 +19,8 @@
 # and allows us to pull in from somewhere else. This should be user-neutral.
 # Previously set to VIMCOMPILEHOME=${VIMCOMPILEHOME:-"/h3/viking/src/c/hosts/github/vim/vim"}
 VIMCOMPILEHOME=${VIMCOMPILEHOME:-"${HOME}/src/vim"}
+# Previously set the mercurial mirror to the same place as github clone.
+VIMHGCOMPILEHOME=${VIMHGCOMPILEHOME:-"${HOME}/src/vim"}
 # Place to put Vim (root of tree)
 VIMHOME=${VIMHOME:-"/usr/local"}
 
@@ -124,6 +127,7 @@ helpMe() {
     echo "   -d   Runs 'make distclean'"
     echo "   -g   Runs 'make distclean', then gets newest git source on current branch"
     echo "   -hg   Runs 'make distclean', then gets newest mercurial source on current branch"
+    echo "           This extracts to a different place than the github mirror"
     echo "   -a   Runs  every step except execute"
     echo "   -e   run every step; distclean, configure, make, install, run"
     echo "        default Vim binary location is ${VIMHOME}"
@@ -444,7 +448,8 @@ elif [[ -n $1 ]]; then
         "-g"|"--git") pushd "${VIMCOMPILEHOME}" >/dev/null
               gitMe
               popd >/dev/null ;;
-        "-hg"|"--mercurial") pushd "${VIMCOMPILEHOME}" >/dev/null
+        # This pushes to a different location, compile by hand, not through here (yet)
+        "-hg"|"--mercurial") pushd "${VIMHGCOMPILEHOME}" >/dev/null
               mercurialMe
               popd >/dev/null ;;
         "-a") pushd "${VIMCOMPILEHOME}" >/dev/null
