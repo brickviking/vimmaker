@@ -614,7 +614,7 @@ cores you wish to throw at compiling.
 
 #+BEGIN_SRC bash -i
 # Let's get number of CPUs we wish to use
-NUMCPU=${}
+# NUMCPU=${} - irrelevant now we've got that stanza above
 USECPU=${NUMCPU:-4}
 # Runs make (hopefully we ran configure first)
 makeMe() {
