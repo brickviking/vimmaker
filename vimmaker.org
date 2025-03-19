@@ -53,8 +53,9 @@ repositories, and Vim is most definitely in the BSD ports tree. I'm providing vi
 users that wish to have a bit of a hand compiling vim by hand, and not merely running with the
 defaults that are provided by those distributions of Linux and BSD.
 
-I have also included a bash autocompletion script, although it might rely on the user having some
-completion scripts in place already.
+I have also included a bash autocompletion script, although it will rely on the user having some
+completion scripts in place already as well as the bash-completion package installed in whatever
+form that takes for them.
 
 ,* Variables and requirements
 First off, you'll need to install the source code to Vim, adjust =VIMCOMPILEHOME= in this script
@@ -158,11 +159,11 @@ to the Vim project page.
 + v0.12 :: Begin process of pulling in vars from environment if already provided.
 + v0.13 :: Now we've got the main x-toolkit targets, how about --without-x?
 + v0.14v :: This has become a branch split off from the original emacsmake project, now
-       called vimmaker and reversioned to 0.1
-+ v0.15 :: Made some more Vim-specific tweaks to the README
+       called vimmaker and reversioned to 0.1.
++ v0.15 :: Made some more Vim-specific tweaks to the README.
 + v0.16 :: Changed vim in prose to Vim where it makes sense to.
-+ v0.17 :: Added a separate mercurial clone tree (256bit.org)
-+ v0.18 :: Initial work on using number of CPU cores to make project
++ v0.17 :: Added a separate mercurial clone tree (256bit.org).
++ v0.18 :: Initial work on using number of CPU cores to make project.
 
 ** Header and Changelog
   :PROPERTIES:
