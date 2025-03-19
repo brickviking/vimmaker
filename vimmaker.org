@@ -170,7 +170,10 @@ to the Vim project page.
   :END:
 
 A few notes made about things added/changed, along with a long-term target to meet for Vim
-versions earlier than 8. That rather depends on how far the commit history goes back.
+versions earlier than 8. That rather depends on how far the commit history goes back. In addition,
+we'll make a note about the separate hg source tree, as this script doesn't process it any further
+than merely distcleaning and fetching. We don't configure/compile that tree nor install it, as it's
+a mirror of the github canonical source.
 
 #+BEGIN_SRC bash
 #!/usr/bin/env bash
