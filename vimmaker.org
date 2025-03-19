@@ -183,6 +183,7 @@ versions earlier than 8. That rather depends on how far the commit history goes 
 #
 # TODO: rework to remove what's left of the emacsisms.
 # TODO: bring up to parity with emacsmake.
+# TODO: add compile-side for the mercurial mirror. We don't have it currently.
 #+END_SRC
 
 ** Parameters
